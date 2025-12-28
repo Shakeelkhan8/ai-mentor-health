@@ -1,0 +1,1 @@
+<img src="https://images.squarespace-cdn.com/content/v1/587a592b3a0411c502816bd8/1484477606857-VZ7SRNMLU8ERLGGL5WSA/MindMentor_Logo_Black_02.png" class="w-100" alt="">
