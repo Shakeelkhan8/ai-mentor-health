@@ -35,4 +35,17 @@ return [
         'secret_key' => env('RECAPTCHA_SECRET_KEY'),
     ],
 
+    'rapidapi' => [
+        'key' => env('RAPIDAPI_KEY'),
+        'host' => env('RAPIDAPI_HOST', 'meta-llama-3-1-405b.p.rapidapi.com'),
+        'coach_url' => env('RAPIDAPI_COACH_URL', 'https://meta-llama-3-1-405b.p.rapidapi.com/'),
+        'model' => env('RAPIDAPI_MODEL', 'llama-3.1-405b'),
+    ],
+
+    'stripe' => [
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+    ],
+
 ];

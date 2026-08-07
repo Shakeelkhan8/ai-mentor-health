@@ -94,7 +94,7 @@
 
       {{-- <!-- Apps & Pages --> --}}
 
-      @if($user->role === "admin")
+      @if(config('mentor.features.care_marketplace') && $user->role === "admin")
       <li class="menu-item {{ Request::is('all-clients') || Request::is('add-client') ? 'open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
           <i class="menu-icon tf-icons ti ti-id"></i>
@@ -115,6 +115,7 @@
         </ul>
       </li>
       @endif
+      @if(config('mentor.features.care_marketplace'))
       <li class="menu-item {{ Request::is('chatbot') ? 'active' : '' }}">
         <a href="{{ route('appointment.index') }}" class="menu-link">
           <i class="menu-icon tf-icons ti ti-brand-tabler"></i>
@@ -127,16 +128,19 @@
           <div >Appointments</div>
         </a>
       </li>
+      @endif
       <li class="menu-header small text-uppercase">
-        <span class="menu-header-text">AI Module</span>
+        <span class="menu-header-text">AI Mentor</span>
       </li>
 
-      <li class="menu-item {{ Request::is('chatbot') ? 'active' : '' }}">
+      @if(config('mentor.features.ai_coach'))
+      <li class="menu-item {{ Request::is('ai/chatbot') || Request::is('chatbot') ? 'active' : '' }}">
         <a href="{{route('chatbot')}}" class="menu-link">
           <i class="menu-icon tf-icons ti ti-brand-tabler"></i>
-          <div >AI ChatBot</div>
+          <div >AI Coach</div>
         </a>
       </li>
+      @endif
 
       <!-- Academy menu end -->
 

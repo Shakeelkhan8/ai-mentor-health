@@ -62,35 +62,42 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
 
-    Route::prefix('ai')->group(function () {
+    Route::prefix('ai')->middleware('feature:ai_coach')->group(function () {
         Route::get('chatbot', [AiController::class, 'index'])->name('chatbot');
         Route::post('chatbot-response', [AiController::class, 'get_response'])->name('chatbot-response');
     });
 
-    Route::post('search-nearest-hospitals', [MainController::class, 'searchhospitals'])->name('search-hospitals');
     Route::get('distributor-profile/{id}', [ProfileController::class, 'distributor_profile'])->name('distributor-profile');
     Route::get('client-profile/{id}', [ProfileController::Class, 'client_profile'])->name('client-profile');
     Route::post('update-password', [ProfileController::class, 'update_password'])->name('update-password');
 });
 
-//Doctors
-Route::prefix('doctors')->group(function () {
-    Route::get('all', [DoctorController::class, 'index'])->name('all-doctors');
-    Route::get('create', [DoctorController::class, 'create'])->name('create-doctor');
-    Route::POST('store', [DoctorController::class, 'store'])->name('store-doctor');
-    Route::POST('add-feedback', [DoctorController::class, 'addFeedback'])->name('add-feedback');
+/*
+|--------------------------------------------------------------------------
+| Deferred: care marketplace (doctors / appointments / hospitals)
+|--------------------------------------------------------------------------
+| Controlled by FEATURE_CARE_MARKETPLACE (default: false).
+*/
+Route::middleware('feature:care_marketplace')->group(function () {
+    Route::post('search-nearest-hospitals', [MainController::class, 'searchhospitals'])->name('search-hospitals');
 
-    Route::get('edit/{id}', [DoctorController::class, 'edit'])->name('edit-doctor');
-    Route::post('update/{id}', [DoctorController::class, 'update'])->name('update-doctor');
-    Route::get('delete/{id}', [DoctorController::class, 'destroy'])->name('delete-doctor');
-    Route::get('view/{id}', [DoctorController::class, 'show'])->name('show-doctor');
+    Route::prefix('doctors')->group(function () {
+        Route::get('all', [DoctorController::class, 'index'])->name('all-doctors');
+        Route::get('create', [DoctorController::class, 'create'])->name('create-doctor');
+        Route::POST('store', [DoctorController::class, 'store'])->name('store-doctor');
+        Route::POST('add-feedback', [DoctorController::class, 'addFeedback'])->name('add-feedback');
+
+        Route::get('edit/{id}', [DoctorController::class, 'edit'])->name('edit-doctor');
+        Route::post('update/{id}', [DoctorController::class, 'update'])->name('update-doctor');
+        Route::get('delete/{id}', [DoctorController::class, 'destroy'])->name('delete-doctor');
+        Route::get('view/{id}', [DoctorController::class, 'show'])->name('show-doctor');
+    });
+
+    Route::resource('appointment', AppointmentController::class);
+    Route::get('/appointment-success', [AppointmentController::class, 'appointmentSuccess'])->name('appointment.success');
+    Route::get('/appointment-cancel', [AppointmentController::class, 'appointmentCancel'])->name('appointment.cancel');
+    Route::get('/all-appointments', [AppointmentController::class, 'show'])->name('appointment.all');
 });
-
-Route::resource('appointment', AppointmentController::class);
-Route::get('/appointment-success', [AppointmentController::class, 'appointmentSuccess'])->name('appointment.success');
-Route::get('/appointment-cancel', [AppointmentController::class, 'appointmentCancel'])->name('appointment.cancel');
-Route::get('/all-appointments', [AppointmentController::class, 'show'])->name('appointment.all');
-
 
 Route::post('form-submit', [MainController::class, 'formSubmit'])->name('contact.store');
 

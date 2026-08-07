@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::table('doctors', function (Blueprint $table) {
             $table->float('price');
-            $table->text('img')->nullable();
         });
     }
 
@@ -24,7 +23,6 @@ return new class extends Migration
     {
         Schema::table('doctors', function (Blueprint $table) {
             $table->dropColumn('price');
-            $table->dropColumn('img');
         });
     }
 };
