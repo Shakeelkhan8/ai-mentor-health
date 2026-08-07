@@ -1,7 +1,7 @@
 {
     "name": "laravel/laravel",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "AI Mentor Health — personal AI wellness coaching platform.",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
