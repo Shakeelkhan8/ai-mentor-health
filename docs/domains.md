@@ -7,8 +7,8 @@
 4. Add a Feature test under `tests/Feature/{Domain}`.
 
 ## Naming
-- Actions: `CreateHabitCheckIn`, `GenerateWeeklyPlan`, `StartCheckoutSession`
-- Services: longer-lived orchestration (`CoachingService`, `SubscriptionService`)
+- Actions: `RecordHabitCheckIn`, `GenerateWeeklyPlan`, `StartSubscriptionCheckout`, `HandleStripeWebhook`
+- Services: longer-lived orchestration (`CoachingService`, `WeeklyPlanGenerator`, `SubscriptionSyncService`)
 - Enums: backed string enums for DB/API stability
 
 ## Models
@@ -25,3 +25,21 @@ Legacy marketplace models remain in `app/Models` until migrated or removed.
 | `coach_messages` | Coaching | role + content |
 | `weekly_plans` | Plans | unique per user/week_start |
 | `subscriptions` | Billing | Stripe ids + status |
+
+## HTTP surface (MVP)
+
+| Area | Routes | Notes |
+|------|--------|--------|
+| Onboarding | `GET/POST /onboarding` | Required before app |
+| Dashboard | `GET /dashboard` | Habits check-in + soft Pro CTA |
+| Coach | `GET/POST /ai/coach*` | `feature:ai_coach` |
+| Weekly plans | `GET /plans/weekly`, `POST /plans/weekly/generate` | `feature:weekly_plans` |
+| Billing | `GET /billing`, `POST /billing/checkout`, success/cancel | `feature:subscriptions` |
+| Stripe webhook | `POST /stripe/webhook` | CSRF excluded; signature verified when secret set |
+
+## Deferred (not MVP)
+- Doctor marketplace  
+- Hospital finder / appointments  
+- Clinical diagnosis / medical decision support  
+
+Gate: `FEATURE_CARE_MARKETPLACE=false`.

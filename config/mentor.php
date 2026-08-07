@@ -20,7 +20,7 @@ return [
     |--------------------------------------------------------------------------
     | This product is a wellness coach, not a medical device or clinician.
     */
-    'disclaimer' => 'AI Mentor Health provides general wellness and lifestyle coaching only. It is not a doctor, therapist, or diagnostic service and does not provide medical advice, diagnosis, or treatment. If you have a medical emergency, contact local emergency services.',
+    'disclaimer' => 'AI Mentor Health provides general wellness guidance and does not diagnose conditions or replace medical professionals.',
 
     /*
     |--------------------------------------------------------------------------

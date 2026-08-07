@@ -3,10 +3,13 @@
 <section class="index2-banner-sec w-100 float-left bg-light-black">
     <div class="wrapper2">
         <div class="banner-left-sec">
-            <h1 data-aos="fade-up" data-aos-duration="600">The <span>Future</span> in <br> AI Mentor Health</h1>
-            <p data-aos="fade-up" data-aos-duration="600">Empowering Healthcare with AI Mentorship</p>
+            <h1 data-aos="fade-up" data-aos-duration="600">{{ config('mentor.name') }}</h1>
+            <p data-aos="fade-up" data-aos-duration="600">{{ config('mentor.tagline') }}</p>
+            <p data-aos="fade-up" data-aos-duration="600" class="small" style="max-width: 36rem;">
+                {{ config('mentor.disclaimer') }}
+            </p>
             <div class="generic-btn" data-aos="fade-up" data-aos-duration="600">
-                <a href="{{route('login')}}">Get Started</a>
+                <a href="{{route('register')}}">Get Started</a>
             </div>
         </div>
 

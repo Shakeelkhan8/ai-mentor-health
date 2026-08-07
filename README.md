@@ -1,66 +1,99 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# AI Mentor Health
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**AI Mentor Health is an AI-powered wellness companion that helps users build healthier habits through personalized coaching, progress tracking, and weekly wellness plans.**
 
-## About Laravel
+It is **not** a generic chatbot. It remembers user goals and focus areas, tracks daily habit check-ins, generates personalized weekly plans, and supports a Pro subscription via Stripe (test mode).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+> AI Mentor Health provides general wellness guidance and does not diagnose conditions or replace medical professionals.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Why this project
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Portfolio + MVP foundation for a B2C wellness product:
 
-## Learning Laravel
+- Domain-oriented Laravel architecture (Identity, Coaching, Habits, Plans, Billing)
+- Swappable AI provider via `AiCoachClient`
+- Stripe Checkout + webhooks for subscriptions
+- Feature flags for deferred care-marketplace modules
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Core product loop
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+1. **Onboard** — goals, focus areas, timezone  
+2. **Coach** — personalized AI wellness chat with safety framing  
+3. **Check in** — daily habit progress  
+4. **Plan** — AI weekly plan (strict JSON + safe fallback)  
+5. **Subscribe** — optional Pro checkout (Stripe test mode; features not gated yet)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Architecture
 
-## Laravel Sponsors
+```text
+HTTP (Controllers, FormRequests, Middleware)
+        ↓
+Application (Actions, Domain Services)
+        ↓
+Domain (Enums, Contracts, Models)
+        ↓
+Infrastructure (RapidAPI coach, Stripe billing)
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+See [docs/architecture.md](docs/architecture.md) and [docs/domains.md](docs/domains.md).
 
-### Premium Partners
+## Quick start
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+# configure DB (MySQL recommended locally)
+php artisan migrate
+npm install && npm run build
+php artisan serve
+```
 
-## Contributing
+PHP **8.3** recommended for this lockfile.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Important env vars
 
-## Code of Conduct
+| Variable | Purpose |
+|----------|---------|
+| `MENTOR_PRODUCT_NAME` | Product display name |
+| `FEATURE_AI_COACH` | AI coach routes |
+| `FEATURE_HABIT_TRACKING` | Habit check-ins |
+| `FEATURE_WEEKLY_PLANS` | Weekly plans |
+| `FEATURE_SUBSCRIPTIONS` | Billing UI |
+| `FEATURE_CARE_MARKETPLACE` | Doctors/hospitals (**keep `false`**) |
+| `RAPIDAPI_KEY` | AI coach provider |
+| `STRIPE_KEY` / `STRIPE_SECRET` | Stripe test keys |
+| `STRIPE_WEBHOOK_SECRET` | Webhook verification (required outside local/testing) |
+| `STRIPE_PRICE_ID` | Recurring Price id for Pro |
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Demo
 
-## Security Vulnerabilities
+Follow the 5–10 minute walkthrough: **[docs/DEMO.md](docs/DEMO.md)**
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Tests
+
+```bash
+php artisan test --filter="OnboardingTest|SendCoachMessageTest|WeeklyPlanTest|SubscriptionBillingTest"
+```
+
+## Pricing model (MVP)
+
+| Tier | What you get |
+|------|----------------|
+| **Free** | Onboarding, AI coach, habit check-ins, weekly plans |
+| **Pro** | Same experience today + Stripe subscription concept for future entitlements |
+
+Features are **not** blocked behind Pro yet (soft CTA only).
+
+## Explicitly deferred / out of scope
+
+- Doctor marketplace  
+- Hospital finder / appointments  
+- Clinical diagnosis  
+- Medical decision support  
+
+Legacy marketplace code remains feature-flagged off (`FEATURE_CARE_MARKETPLACE=false`).
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Application code in this repository follows the project’s existing license terms. Laravel framework components remain under the MIT license.
