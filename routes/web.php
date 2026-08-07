@@ -5,8 +5,9 @@ use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\FormController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Web\Coaching\CoachController;
+use App\Http\Controllers\Web\Habits\HabitDashboardController;
 use App\Http\Controllers\Web\Onboarding\OnboardingController;
+use App\Http\Controllers\Web\Coaching\CoachController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -33,7 +34,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/onboarding', [OnboardingController::class, 'store'])->name('onboarding.store');
 
     Route::middleware('onboarded')->group(function () {
-        Route::get('/dashboard', [MainController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [HabitDashboardController::class, 'index'])->name('dashboard');
+        Route::post('/habits/{habit}/check-ins', [HabitDashboardController::class, 'store'])
+            ->middleware('feature:habit_tracking')
+            ->name('habits.check-ins.store');
 
         Route::get('community-form', [MainController::class, 'forms'])->name('community-forms');
         Route::get('edit-profile', [ProfileController::class, 'edit_profile'])->name('edit_profile');
