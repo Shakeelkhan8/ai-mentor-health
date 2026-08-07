@@ -1,20 +1,13 @@
 <?php
 
-use App\Http\Controllers\AiController;
+use App\Http\Controllers\Web\Coaching\CoachController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\BannerController;
-use App\Http\Controllers\ClientController;
-use App\Http\Controllers\DealerController;
-use App\Http\Controllers\FileController;
 use App\Http\Controllers\FormController;
 use App\Http\Controllers\MainController;
-use App\Http\Controllers\PartnerController;
-
-use App\Http\Controllers\DiscountController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -62,9 +55,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
 
-    Route::prefix('ai')->middleware('feature:ai_coach')->group(function () {
-        Route::get('chatbot', [AiController::class, 'index'])->name('chatbot');
-        Route::post('chatbot-response', [AiController::class, 'get_response'])->name('chatbot-response');
+    Route::prefix('ai')->middleware(['feature:ai_coach', 'throttle:coach'])->group(function () {
+        Route::get('coach', [CoachController::class, 'index'])->name('coach.index');
+        Route::post('coach/messages', [CoachController::class, 'store'])->name('coach.messages.store');
+
+        // Backward-compatible aliases used by existing menu/UI.
+        Route::get('chatbot', [CoachController::class, 'index'])->name('chatbot');
+        Route::post('chatbot-response', [CoachController::class, 'store'])->name('chatbot-response');
     });
 
     Route::get('distributor-profile/{id}', [ProfileController::class, 'distributor_profile'])->name('distributor-profile');
