@@ -24,7 +24,7 @@ class AiController extends Controller
         try {
             $response = $client->post('https://meta-llama-3-1-405b.p.rapidapi.com/', [
                 'headers' => [
-                    'x-rapidapi-key' => env('RAPIDAPI_KEY', '0e1831b781msh66cc05a2d58a7e2p1b6114jsn017dec11439c'),
+                    'x-rapidapi-key' => env('RAPIDAPI_KEY'),
                     'x-rapidapi-host' => 'meta-llama-3-1-405b.p.rapidapi.com',
                     'Content-Type' => 'application/json',
                 ],

@@ -87,7 +87,7 @@ class MainController extends Controller
             ],
             'headers' => [
                 'x-rapidapi-host' => 'maps-data.p.rapidapi.com',
-                'x-rapidapi-key' => '0e1831b781msh66cc05a2d58a7e2p1b6114jsn017dec11439c',
+                'x-rapidapi-key' => env('RAPIDAPI_KEY'),
             ],
         ]);
 
