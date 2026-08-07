@@ -46,10 +46,16 @@ class CoachController extends WebController
                 'message' => $result['message'],
             ]);
         } catch (DomainException $e) {
+            $status = match ($e->errorCode) {
+                'ai_not_configured', 'ai_provider_error' => 503,
+                'conversation_not_found' => 404,
+                default => 422,
+            };
+
             return response()->json([
                 'error' => $e->getMessage(),
                 'code' => $e->errorCode,
-            ], $e->errorCode === 'ai_not_configured' ? 503 : 422);
+            ], $status);
         } catch (Throwable $e) {
             report($e);
 

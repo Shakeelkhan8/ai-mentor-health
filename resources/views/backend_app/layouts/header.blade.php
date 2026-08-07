@@ -133,8 +133,17 @@
         <span class="menu-header-text">AI Mentor</span>
       </li>
 
+      @if(!($user->profile?->hasCompletedOnboarding() ?? false))
+      <li class="menu-item {{ Request::is('onboarding') ? 'active' : '' }}">
+        <a href="{{ route('onboarding.show') }}" class="menu-link">
+          <i class="menu-icon tf-icons ti ti-user-check"></i>
+          <div>Complete setup</div>
+        </a>
+      </li>
+      @endif
+
       @if(config('mentor.features.ai_coach'))
-      <li class="menu-item {{ Request::is('ai/chatbot') || Request::is('chatbot') ? 'active' : '' }}">
+      <li class="menu-item {{ Request::is('ai/chatbot') || Request::is('ai/coach') || Request::is('chatbot') ? 'active' : '' }}">
         <a href="{{route('chatbot')}}" class="menu-link">
           <i class="menu-icon tf-icons ti ti-brand-tabler"></i>
           <div >AI Coach</div>
