@@ -25,6 +25,13 @@ class SendCoachMessageTest extends TestCase
             'email_verified_at' => now(),
         ]);
 
+        $user->profile()->create([
+            'focus_areas' => ['sleep'],
+            'primary_goal' => 'Sleep better',
+            'timezone' => 'UTC',
+            'onboarding_completed_at' => now(),
+        ]);
+
         $response = $this->actingAs($user)->postJson(route('coach.messages.store'), [
             'message' => 'I want better sleep.',
         ]);

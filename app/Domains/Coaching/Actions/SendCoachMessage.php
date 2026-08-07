@@ -38,9 +38,11 @@ class SendCoachMessage extends Action
             $conversation = $this->resolveConversation($user, $conversationId);
 
             $history = $conversation->messages()
-                ->orderBy('id')
+                ->orderByDesc('id')
                 ->limit(self::HISTORY_LIMIT)
                 ->get()
+                ->sortBy('id')
+                ->values()
                 ->map(fn (CoachMessage $message) => [
                     'role' => $message->role->value,
                     'content' => $message->content,
