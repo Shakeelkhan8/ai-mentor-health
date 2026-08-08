@@ -49,3 +49,13 @@ docs/
 `CoachingService` → `AiCoachClient` (contract) → `RapidApiCoachClient` (infra)
 
 Swap AI providers by rebinding in `DomainServiceProvider` — domain code stays unchanged.
+
+`StartSubscriptionCheckout` → `BillingGateway` → `StripeBillingGateway`
+
+## Safety
+Product copy and coach/plan prompts frame AI Mentor Health as **general wellness guidance only** — not diagnosis or medical care.
+
+## Docs
+- [DEMO.md](DEMO.md) — recruiter/demo walkthrough  
+- [domains.md](domains.md) — conventions + route map  
+

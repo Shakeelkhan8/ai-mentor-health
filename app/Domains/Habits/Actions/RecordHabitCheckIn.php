@@ -9,6 +9,7 @@ use App\Domains\Shared\Actions\Action;
 use App\Domains\Shared\Exceptions\DomainException;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 
 class RecordHabitCheckIn extends Action
@@ -60,17 +61,25 @@ class RecordHabitCheckIn extends Action
                 'user_id' => $user->id,
                 'status' => $status,
                 'note' => isset($payload['note']) ? trim((string) $payload['note']) : null,
-                'mood_score' => $mood,
+                'mood_score' => $payload['mood_score'] ?? null,
                 'check_in_date' => $today,
             ];
 
             if ($checkIn) {
                 $checkIn->fill($attributes)->save();
             } else {
-                $checkIn = HabitCheckIn::query()->create([
-                    'habit_id' => $habit->id,
-                    ...$attributes,
-                ]);
+                try {
+                    $checkIn = HabitCheckIn::query()->create([
+                        'habit_id' => $habit->id,
+                        ...$attributes,
+                    ]);
+                } catch (UniqueConstraintViolationException) {
+                    $checkIn = HabitCheckIn::query()
+                        ->where('habit_id', $habit->id)
+                        ->whereDate('check_in_date', $today)
+                        ->firstOrFail();
+                    $checkIn->fill($attributes)->save();
+                }
             }
 
             return $checkIn->fresh(['habit']);

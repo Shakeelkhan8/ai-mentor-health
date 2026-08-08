@@ -151,6 +151,29 @@
       </li>
       @endif
 
+      @if(config('mentor.features.weekly_plans'))
+      <li class="menu-item {{ Request::is('plans/weekly') ? 'active' : '' }}">
+        <a href="{{ route('plans.weekly.show') }}" class="menu-link">
+          <i class="menu-icon tf-icons ti ti-calendar-event"></i>
+          <div>Weekly Plan</div>
+        </a>
+      </li>
+      @endif
+
+      @if(config('mentor.features.subscriptions'))
+      <li class="menu-item {{ Request::is('billing*') ? 'active' : '' }}">
+        <a href="{{ route('billing.show') }}" class="menu-link">
+          <i class="menu-icon tf-icons ti ti-credit-card"></i>
+          <div>
+            Billing
+            @if(! auth()->user()?->activeSubscription())
+              <span class="badge bg-label-primary ms-1">Pro</span>
+            @endif
+          </div>
+        </a>
+      </li>
+      @endif
+
       <!-- Academy menu end -->
 
 

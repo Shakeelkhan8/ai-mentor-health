@@ -29,6 +29,10 @@
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="FEATURE_AI_COACH" value="true"/>
+        <env name="FEATURE_HABIT_TRACKING" value="true"/>
+        <env name="FEATURE_WEEKLY_PLANS" value="true"/>
+        <env name="FEATURE_SUBSCRIPTIONS" value="true"/>
         <env name="FEATURE_CARE_MARKETPLACE" value="false"/>
+        <env name="STRIPE_PRICE_ID" value="price_test_mentor_pro"/>
     </php>
 </phpunit>
