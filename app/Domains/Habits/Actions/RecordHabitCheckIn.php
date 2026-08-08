@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\DB;
 
 class RecordHabitCheckIn extends Action
 {
+    /**
+     * @param  array{status: string, note?: string|null, mood_score?: int|null}  $payload
+     */
     public function execute(mixed ...$args): mixed
     {
         /** @var User $user */
@@ -40,10 +43,15 @@ class RecordHabitCheckIn extends Action
             throw new DomainException('Invalid check-in status.', 'invalid_check_in_status');
         }
 
+        $mood = $payload['mood_score'] ?? null;
+        if ($mood !== null && ($mood < 1 || $mood > 10)) {
+            throw new DomainException('Mood score must be between 1 and 10.', 'invalid_mood_score');
+        }
+
         $timezone = $user->profile?->timezone ?: config('app.timezone', 'UTC');
         $today = Carbon::now($timezone)->toDateString();
 
-        return DB::transaction(function () use ($user, $habit, $status, $payload, $today) {
+        return DB::transaction(function () use ($user, $habit, $status, $payload, $mood, $today) {
             $checkIn = HabitCheckIn::query()
                 ->where('habit_id', $habit->id)
                 ->whereDate('check_in_date', $today)
