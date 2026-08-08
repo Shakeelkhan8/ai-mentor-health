@@ -164,10 +164,13 @@ id="layout-navbar">
 
 
         <li>
-          <a class="dropdown-item" href="{{route('logout')}}" >
-            <i class="ti ti-logout me-2 ti-sm"></i>
-            <span class="align-middle">Log Out</span>
-          </a>
+          <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="dropdown-item border-0 bg-transparent w-100 text-start">
+              <i class="ti ti-logout me-2 ti-sm"></i>
+              <span class="align-middle">Log Out</span>
+            </button>
+          </form>
         </li>
       </ul>
     </li>

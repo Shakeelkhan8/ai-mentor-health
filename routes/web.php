@@ -24,8 +24,12 @@ Route::view('faqs', 'front_app.faq')->name('faqs');
 Route::view('pricing', 'front_app.pricing')->name('pricing');
 Route::view('contact', 'front_app.contact')->name('contact');
 Route::view('services', 'front_app.services')->name('services');
-Route::post('send-mail', [MainController::class, 'send_Mail'])->name('sendmail');
-Route::post('form-submit', [MainController::class, 'formSubmit'])->name('contact.store');
+Route::post('send-mail', [MainController::class, 'send_Mail'])
+    ->middleware('throttle:5,1')
+    ->name('sendmail');
+Route::post('form-submit', [MainController::class, 'formSubmit'])
+    ->middleware('throttle:10,1')
+    ->name('contact.store');
 
 /*
 |--------------------------------------------------------------------------

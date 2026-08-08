@@ -40,13 +40,28 @@ class HabitDashboardService
             ->orderBy('id')
             ->get();
 
-        $habits = $habits->map(function (Habit $habit) use ($today, $timezone) {
+        $doneDatesByHabit = HabitCheckIn::query()
+            ->where('user_id', $user->id)
+            ->whereIn('habit_id', $habits->pluck('id'))
+            ->where('status', CheckInStatus::Done)
+            ->orderByDesc('check_in_date')
+            ->get(['habit_id', 'check_in_date'])
+            ->groupBy('habit_id')
+            ->map(fn (Collection $rows) => $rows
+                ->map(fn (HabitCheckIn $checkIn) => $checkIn->check_in_date->toDateString())
+                ->unique()
+                ->values());
+
+        $habits = $habits->map(function (Habit $habit) use ($today, $timezone, $doneDatesByHabit) {
             $todayCheckIn = $habit->checkIns->first(
                 fn (HabitCheckIn $checkIn) => $checkIn->check_in_date->toDateString() === $today
             );
 
             $habit->setAttribute('today_check_in', $todayCheckIn);
-            $habit->setAttribute('current_streak', $this->currentStreak($habit, $timezone));
+            $habit->setAttribute(
+                'current_streak',
+                $this->streakFromDates($doneDatesByHabit->get($habit->id, collect()), $timezone)
+            );
 
             return $habit;
         });
@@ -76,17 +91,11 @@ class HabitDashboardService
         ];
     }
 
-    public function currentStreak(Habit $habit, string $timezone): int
+    /**
+     * @param  Collection<int, string>  $doneDates
+     */
+    public function streakFromDates(Collection $doneDates, string $timezone): int
     {
-        $doneDates = HabitCheckIn::query()
-            ->where('habit_id', $habit->id)
-            ->where('status', CheckInStatus::Done)
-            ->orderByDesc('check_in_date')
-            ->pluck('check_in_date')
-            ->map(fn ($date) => Carbon::parse($date)->toDateString())
-            ->unique()
-            ->values();
-
         if ($doneDates->isEmpty()) {
             return 0;
         }

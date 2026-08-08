@@ -15,7 +15,13 @@ class EnsureFeatureEnabled
      */
     public function handle(Request $request, Closure $next, string $feature): Response
     {
-        if (! config("mentor.features.{$feature}")) {
+        $features = config('mentor.features', []);
+
+        if (! array_key_exists($feature, $features)) {
+            abort(404);
+        }
+
+        if (! $features[$feature]) {
             abort(404);
         }
 

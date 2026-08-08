@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\NewsLetterMail;
 use App\Models\DiscountForm;
 use App\Models\Form;
 use Illuminate\Http\Request;
@@ -11,7 +10,6 @@ use App\Models\Client;
 use App\Models\ContactForm;
 use App\Models\Distributor;
 use App\Models\Ledger;
-use Mail;
 
 
 class MainController extends Controller
@@ -60,11 +58,24 @@ class MainController extends Controller
         return response()->json($response);
     }
 
+    /**
+     * Newsletter signup — stores intent only.
+     * Does not send outbound mail to arbitrary addresses (open-relay prevention).
+     */
     public function send_Mail(Request $request)
     {
+        $validated = $request->validate([
+            'email' => ['required', 'email', 'max:255'],
+        ]);
 
-        Mail::to($request->email)->send(new NewsLetterMail($request->email));
-        return back()->with("success", "Mail Has been sent successfully");
+        ContactForm::query()->create([
+            'name' => 'Newsletter signup',
+            'phone' => 'n/a',
+            'email' => $validated['email'],
+            'message' => 'Newsletter signup request',
+        ]);
+
+        return back()->with('success', 'Thanks — you are on the list. We will be in touch soon.');
     }
 
     public function searchhospitals(Request $request)
@@ -121,7 +132,10 @@ class MainController extends Controller
     }
     public function forms()
     {
+        $this->authorize('admin');
+
         $forms = ContactForm::all();
+
         return view('backend_app.community-form.index', compact('forms'));
     }
 }

@@ -10,6 +10,7 @@ use App\Domains\Shared\Actions\Action;
 use App\Domains\Shared\Exceptions\DomainException;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class SendCoachMessage extends Action
 {
@@ -34,7 +35,8 @@ class SendCoachMessage extends Action
             throw new DomainException('Message cannot be empty.', 'empty_message');
         }
 
-        return DB::transaction(function () use ($user, $content, $conversationId) {
+        // Persist the user turn first — never hold a DB transaction open during the AI HTTP call.
+        [$conversation, $history] = DB::transaction(function () use ($user, $content, $conversationId) {
             $conversation = $this->resolveConversation($user, $conversationId);
 
             $history = $conversation->messages()
@@ -55,8 +57,26 @@ class SendCoachMessage extends Action
                 'content' => $content,
             ]);
 
-            $reply = $this->coachingService->reply($content, $history);
+            return [$conversation, $history];
+        });
 
+        try {
+            $reply = $this->coachingService->reply($content, $history);
+        } catch (Throwable $e) {
+            report($e);
+
+            if ($e instanceof DomainException) {
+                throw $e;
+            }
+
+            throw new DomainException(
+                'Unable to reach the AI coaching provider.',
+                'ai_provider_error',
+                previous: $e,
+            );
+        }
+
+        DB::transaction(function () use ($conversation, $user, $content, $reply) {
             $conversation->messages()->create([
                 'user_id' => $user->id,
                 'role' => MessageRole::Assistant,
@@ -68,12 +88,12 @@ class SendCoachMessage extends Action
                 'is_active' => true,
                 'title' => $conversation->title ?: mb_substr($content, 0, 60),
             ])->save();
-
-            return [
-                'conversation_id' => $conversation->id,
-                'message' => $reply,
-            ];
         });
+
+        return [
+            'conversation_id' => $conversation->id,
+            'message' => $reply,
+        ];
     }
 
     private function resolveConversation(User $user, mixed $conversationId): CoachConversation

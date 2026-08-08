@@ -5,48 +5,48 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use App\Models\Doctor;
 use Illuminate\Http\Request;
-use Stripe\Stripe;
-use Stripe\Checkout\Session;
-use Illuminate\Support\Facades\Redirect;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Stripe\Checkout\Session;
+use Stripe\Exception\ApiErrorException;
+use Stripe\Stripe;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Redirect;
 
 class AppointmentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $doctors=Doctor::with('appointments')->paginate(10);
-        return view('backend_app.appointments.index',compact('doctors'));
+        $doctors = Doctor::with('appointments')->paginate(10);
+
+        return view('backend_app.appointments.index', compact('doctors'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        
+        //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $user = auth()->user();
-        $doctor = Doctor::findOrFail($request->doctor_id);
-        $appointmentDate = $request->input('appointment_date');
-        $dateTime = Carbon::parse($appointmentDate);
-        
-        // Separate date and time
-        $date = $dateTime->toDateString(); // Y-m-d format as a date type, e.g., "2024-10-30"
-        $time = $dateTime->toTimeString(); 
-        // Set Stripe API Key
-        Stripe::setApiKey(env('STRIPE_SECRET'));
-    
-        // Define the checkout session
+        $validated = $request->validate([
+            'doctor_id' => ['required', 'integer', 'exists:doctors,id'],
+            'appointment_date' => ['required', 'date'],
+        ]);
+
+        $user = $request->user();
+        $doctor = Doctor::query()->findOrFail($validated['doctor_id']);
+        $dateTime = Carbon::parse($validated['appointment_date']);
+        $date = $dateTime->toDateString();
+        $time = $dateTime->toTimeString();
+
+        $secret = config('services.stripe.secret');
+        if (blank($secret)) {
+            return back()->withErrors(['billing' => 'Stripe is not configured.']);
+        }
+
+        Stripe::setApiKey($secret);
+
         $checkoutSession = Session::create([
             'payment_method_types' => ['card'],
             'line_items' => [[
@@ -55,88 +55,126 @@ class AppointmentController extends Controller
                     'product_data' => [
                         'name' => "Appointment with Dr. {$doctor->name}",
                     ],
-                    'unit_amount' => $doctor->price * 100, // Price in cents
+                    'unit_amount' => (int) round(((float) $doctor->price) * 100),
                 ],
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
-            'success_url' => route('appointment.success', [
-                'doctor_id' => $doctor->id,
-                'user_id' => $user->id,
+            'client_reference_id' => (string) $user->id,
+            'metadata' => [
+                'user_id' => (string) $user->id,
+                'doctor_id' => (string) $doctor->id,
                 'appointment_date' => $date,
-                'start_time'=>$time
-            ]),
+                'start_time' => $time,
+            ],
+            'success_url' => route('appointment.success').'?session_id={CHECKOUT_SESSION_ID}',
             'cancel_url' => route('appointment.cancel'),
         ]);
-    
-        // Redirect to Stripe Checkout page
+
         return Redirect::away($checkoutSession->url);
     }
 
-
-    public function appointmentSuccess(Request $request){
-       try {
-        Appointment::create([
-            'user_id'=>$request->user_id,
-            'doctor_id'=>$request->doctor_id,
-            'date'=>$request->appointment_date,
-            'start_time'=>$request->start_time,
-        ]);
-        $doctor=Doctor::find($request->doctor_id);
-        createNotification($request->user_id,"Payment Success", 'Appointment has been booked successfully with Dr '.$doctor->name);
-        return view('backend_app.payment_status.success');
-       } catch (\Throwable $th) {
-        return $th->getMessage();
-       }
-    }
-
-    public function appointmentCancel(){
-        try {
-           return view('backend_app.payment_status.cancelled');
-        } catch (\Throwable $th) {
-            return $th->getMessage();
-        }
-    }
     /**
-     * Display the specified resource.
+     * Confirm payment via Stripe Checkout Session only.
+     * Never trusts client-supplied user/doctor/date query params.
      */
+    public function appointmentSuccess(Request $request)
+    {
+        $validated = $request->validate([
+            'session_id' => ['required', 'string'],
+        ]);
+
+        $user = $request->user();
+        abort_unless($user !== null, 403);
+
+        $secret = config('services.stripe.secret');
+        if (blank($secret)) {
+            abort(503, 'Stripe is not configured.');
+        }
+
+        Stripe::setApiKey($secret);
+
+        try {
+            $session = Session::retrieve($validated['session_id']);
+        } catch (ApiErrorException $e) {
+            Log::warning('Invalid Stripe checkout session on appointment success', [
+                'session_id' => $validated['session_id'],
+                'error' => $e->getMessage(),
+            ]);
+            abort(400, 'Invalid checkout session.');
+        }
+
+        if (($session->mode ?? null) !== 'payment') {
+            abort(400, 'Invalid checkout mode.');
+        }
+
+        if (($session->payment_status ?? null) !== 'paid') {
+            abort(402, 'Payment not completed.');
+        }
+
+        $metaUserId = (int) ($session->metadata->user_id ?? $session->client_reference_id ?? 0);
+        abort_unless($metaUserId === (int) $user->id, 403);
+
+        $doctorId = (int) ($session->metadata->doctor_id ?? 0);
+        $date = $session->metadata->appointment_date ?? null;
+        $time = $session->metadata->start_time ?? null;
+
+        if ($doctorId < 1 || blank($date) || blank($time)) {
+            abort(422, 'Checkout session is missing appointment metadata.');
+        }
+
+        $doctor = Doctor::query()->findOrFail($doctorId);
+
+        $appointment = Appointment::query()->firstOrCreate(
+            [
+                'user_id' => $user->id,
+                'doctor_id' => $doctor->id,
+                'date' => $date,
+                'start_time' => $time,
+            ]
+        );
+
+        if ($appointment->wasRecentlyCreated) {
+            createNotification(
+                $user->id,
+                'Payment Success',
+                'Appointment has been booked successfully with Dr '.$doctor->name
+            );
+        }
+
+        return view('backend_app.payment_status.success');
+    }
+
+    public function appointmentCancel()
+    {
+        return view('backend_app.payment_status.cancelled');
+    }
+
     public function show()
     {
-        try {
-            $user=Auth::user();
-            if($user->role === "admin"){
-            $data=Appointment::with('user')->paginate(15);
-        }   
-        else{
-        $data=Appointment::with('user','doctor')->where('user_id',$user->id)->paginate(15);
+        $user = Auth::user();
+
+        if ($user->role === 'admin') {
+            $data = Appointment::with('user')->paginate(15);
+        } else {
+            $data = Appointment::with('user', 'doctor')
+                ->where('user_id', $user->id)
+                ->paginate(15);
         }
 
-        return view('backend_app.appointments.show',compact('data'));
-
-        } catch (\Throwable $th) {
-            return back()->with("error",$th->getMessage());
-        }
+        return view('backend_app.appointments.show', compact('data'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         //

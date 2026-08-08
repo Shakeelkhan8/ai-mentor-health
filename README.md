@@ -70,11 +70,17 @@ PHP **8.3** recommended for this lockfile.
 
 Follow the 5–10 minute walkthrough: **[docs/DEMO.md](docs/DEMO.md)**
 
+## Ops
+
+Deploy checklist, secrets, and observability notes: **[docs/ops.md](docs/ops.md)**
+
 ## Tests
 
 ```bash
-php artisan test --filter="OnboardingTest|SendCoachMessageTest|WeeklyPlanTest|SubscriptionBillingTest"
+php artisan test
 ```
+
+CI runs the full suite on push/PR via GitHub Actions (`.github/workflows/ci.yml`).
 
 ## Pricing model (MVP)
 

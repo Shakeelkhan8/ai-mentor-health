@@ -3,12 +3,6 @@
 namespace App\Http\Controllers\Web\Habits;
 
 use App\Domains\Habits\Actions\RecordHabitCheckIn;
-use App\Domains\Habits\Enums\CheckInStatus;
-use App\Domains\Habits\Models\Habit;
-use App\Domains\Shared\Exceptions\DomainException;
-use App\Http\Controllers\Web\WebController;
-use App\Http\Requests\Habits\RecordHabitCheckInRequest;
-use Carbon\Carbon;
 use App\Domains\Habits\Models\Habit;
 use App\Domains\Habits\Services\HabitDashboardService;
 use App\Domains\Shared\Exceptions\DomainException;
@@ -28,6 +22,7 @@ class HabitDashboardController extends WebController
             'productName' => config('mentor.name'),
             'profile' => $user->profile,
             'disclaimer' => config('mentor.disclaimer'),
+            'hasActiveSubscription' => (bool) $user->activeSubscription(),
             ...$dashboard,
         ]);
     }
@@ -37,7 +32,7 @@ class HabitDashboardController extends WebController
         RecordHabitCheckInRequest $request,
         RecordHabitCheckIn $recordHabitCheckIn,
     ): RedirectResponse {
-        abort_unless((int) $habit->user_id === (int) $request->user()->id, 404);
+        abort_unless($request->user()->can('update', $habit), 404);
 
         try {
             $recordHabitCheckIn->execute(

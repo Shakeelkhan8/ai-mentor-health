@@ -34,6 +34,6 @@ return [
         'habit_tracking' => env('FEATURE_HABIT_TRACKING', true),
         'weekly_plans' => env('FEATURE_WEEKLY_PLANS', true),
         'subscriptions' => env('FEATURE_SUBSCRIPTIONS', true),
-        'care_marketplace' => env('FEATURE_CARE_MARKETPLACE', false),
+        'care_marketplace' => env('FEATURE_CARE_MARKETPLACE', false), // keep false — deferred & payment path hardened only
     ],
 ];
