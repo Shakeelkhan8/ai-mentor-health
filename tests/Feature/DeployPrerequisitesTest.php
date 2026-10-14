@@ -9,32 +9,9 @@ class DeployPrerequisitesTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * Reboot the app with TRUSTED_PROXIES set, the way a host's environment would.
-     */
-    private function bootWithTrustedProxies(?string $value): void
-    {
-        foreach (['putenv', '_ENV', '_SERVER'] as $store) {
-            match ($store) {
-                'putenv' => $value === null ? putenv('TRUSTED_PROXIES') : putenv("TRUSTED_PROXIES={$value}"),
-                '_ENV' => $value === null ? $this->unsetKey($_ENV) : $_ENV['TRUSTED_PROXIES'] = $value,
-                '_SERVER' => $value === null ? $this->unsetKey($_SERVER) : $_SERVER['TRUSTED_PROXIES'] = $value,
-            };
-        }
-
-        $this->refreshApplication();
-        $this->setUpTraits();
-    }
-
-    private function unsetKey(array &$store): void
-    {
-        unset($store['TRUSTED_PROXIES']);
-    }
-
     protected function tearDown(): void
     {
-        putenv('TRUSTED_PROXIES');
-        unset($_ENV['TRUSTED_PROXIES'], $_SERVER['TRUSTED_PROXIES']);
+        unset($_SERVER['TRUSTED_PROXIES'], $_ENV['TRUSTED_PROXIES']);
 
         parent::tearDown();
     }
@@ -46,9 +23,35 @@ class DeployPrerequisitesTest extends TestCase
             ->get('/login');
     }
 
+    /**
+     * Evaluate config/trustedproxy.php with TRUSTED_PROXIES set (or not) the way the
+     * host's environment would, without rebooting the app. A reboot re-reads .env,
+     * whose loader may overwrite a value it set on the first boot.
+     */
+    private function trustedProxiesConfigWith(?string $value): mixed
+    {
+        // Clear every place the value can come from (.env loads into all three).
+        unset($_SERVER['TRUSTED_PROXIES'], $_ENV['TRUSTED_PROXIES']);
+        putenv('TRUSTED_PROXIES');
+
+        if ($value !== null) {
+            $_SERVER['TRUSTED_PROXIES'] = $value;
+        }
+
+        return (require config_path('trustedproxy.php'))['proxies'];
+    }
+
+    public function test_trusted_proxies_come_from_the_environment_and_default_to_none(): void
+    {
+        $this->assertSame('*', $this->trustedProxiesConfigWith('*'));
+        $this->assertSame('10.0.0.1,10.0.0.2', $this->trustedProxiesConfigWith('10.0.0.1,10.0.0.2'));
+        $this->assertNull($this->trustedProxiesConfigWith(''), 'An empty value (as in .env.example) trusts no proxy.');
+        $this->assertNull($this->trustedProxiesConfigWith(null));
+    }
+
     public function test_links_use_https_when_the_hosting_proxy_is_trusted(): void
     {
-        $this->bootWithTrustedProxies('*');
+        config(['trustedproxy.proxies' => '*']);
 
         $this->loginPageBehindHttpsProxy()
             ->assertOk()
@@ -57,7 +60,7 @@ class DeployPrerequisitesTest extends TestCase
 
     public function test_forwarded_headers_are_ignored_unless_proxies_are_configured(): void
     {
-        $this->bootWithTrustedProxies(null);
+        config(['trustedproxy.proxies' => null]);
 
         $this->loginPageBehindHttpsProxy()
             ->assertOk()
