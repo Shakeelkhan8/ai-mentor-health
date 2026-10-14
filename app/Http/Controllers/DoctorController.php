@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Doctor;
 use App\Models\DoctorFeedback;
+use App\Support\ImageUpload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -40,15 +41,12 @@ class DoctorController extends Controller
                 'country' => 'required',
                 'city' => 'required',
                 'address' => 'required',
-                'price' => 'required'
+                'price' => 'required',
+                'img' => ['nullable', ImageUpload::rule()],
             ]);
             $img = null;
             if ($request->hasFile('img')) {
-                $image = $request->file('img');
-                $imagename = $request->file('img')->getClientOriginalName();
-                $destinationpath = public_path('assets/doctors/');
-                $image->move($destinationpath, $imagename);
-                $img = $imagename;
+                $img = ImageUpload::store($request->file('img'), 'doctor_photos');
             }
             Doctor::create([
                 'name' => $request->name,
