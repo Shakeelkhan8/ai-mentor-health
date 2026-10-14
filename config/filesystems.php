@@ -44,6 +44,25 @@ return [
             'throw' => false,
         ],
 
+        // User-uploaded images, kept in the public/ folders the views already reference.
+        // Writes go through App\Support\ImageUpload; `throw` surfaces a failed write as an
+        // exception instead of a silent false that would be saved as the image name.
+        'avatars' => [
+            'driver' => 'local',
+            'root' => public_path('assets/users'),
+            'url' => env('APP_URL').'/assets/users',
+            'visibility' => 'public',
+            'throw' => true,
+        ],
+
+        'doctor_photos' => [
+            'driver' => 'local',
+            'root' => public_path('assets/doctors'),
+            'url' => env('APP_URL').'/assets/doctors',
+            'visibility' => 'public',
+            'throw' => true,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
