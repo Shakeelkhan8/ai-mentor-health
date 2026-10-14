@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\DoctorController;
-use App\Http\Controllers\FormController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Web\Billing\BillingController;
@@ -49,8 +48,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/profile', [ProfileController::class, 'update']);
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
         Route::post('update-password', [ProfileController::class, 'update_password'])->name('update-password');
-        Route::get('distributor-profile/{id}', [ProfileController::class, 'distributor_profile'])->name('distributor-profile');
-        Route::get('client-profile/{id}', [ProfileController::class, 'client_profile'])->name('client-profile');
 
         Route::prefix('ai')->middleware(['feature:ai_coach', 'throttle:coach'])->group(function () {
             Route::get('coach', [CoachController::class, 'index'])->name('coach.index');
