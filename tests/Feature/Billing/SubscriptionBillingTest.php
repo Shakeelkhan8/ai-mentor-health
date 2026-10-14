@@ -80,7 +80,7 @@ class SubscriptionBillingTest extends TestCase
             'id' => 'evt_test_1',
             'type' => 'checkout.session.completed',
             'data' => [
-                    'object' => [
+                'object' => [
                     'id' => 'cs_test_1',
                     'mode' => 'subscription',
                     'payment_status' => 'paid',

@@ -30,7 +30,7 @@ class HandleStripeWebhook extends Action
 
     public function execute(mixed ...$args): mixed
     {
-        /** @var array{id?: string, type: string, created?: int, data: array} $event */
+        /** @var array{id?: string, type?: string, created?: int, data?: array} $event */
         $event = $args[0];
         $eventId = (string) ($event['id'] ?? '');
         $type = (string) ($event['type'] ?? '');

@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
+use App\Support\ImageUpload;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
-use App\Models\User;
-use App\Support\ImageUpload;
-use Illuminate\Support\Facades\Hash;
+
 class ProfileController extends Controller
 {
     /**
@@ -28,25 +29,25 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-       $user=Auth::user();
-       $data=User::find($user->id);
-       if ($request->hasFile('img')){
-        $data->img=ImageUpload::store($request->file('img'), 'avatars');
-       }
+        $user = Auth::user();
+        $data = User::find($user->id);
+        if ($request->hasFile('img')) {
+            $data->img = ImageUpload::store($request->file('img'), 'avatars');
+        }
 
-       $data->name=$request->name;
-       $data->email=$request->email;
-       // A new address has not been verified yet.
-       if ($data->isDirty('email')) {
-           $data->email_verified_at = null;
-       }
-       $data->organization=$request->organization;
-       $data->phone_no=$request->phone_no;
-       $data->address=$request->address;
-       $data->country=$request->country;
-       $data->save();
+        $data->name = $request->name;
+        $data->email = $request->email;
+        // A new address has not been verified yet.
+        if ($data->isDirty('email')) {
+            $data->email_verified_at = null;
+        }
+        $data->organization = $request->organization;
+        $data->phone_no = $request->phone_no;
+        $data->address = $request->address;
+        $data->country = $request->country;
+        $data->save();
 
-       return back()->with('success','User has been updated successfully');
+        return back()->with('success', 'User has been updated successfully');
 
     }
 
@@ -70,11 +71,16 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
-    public function edit_profile(){
-        $user=Auth::user();
-        return view('backend_app.edit_profile',compact('user'));
+
+    public function edit_profile()
+    {
+        $user = Auth::user();
+
+        return view('backend_app.edit_profile', compact('user'));
     }
-    public function update_password(Request $request){
+
+    public function update_password(Request $request)
+    {
         // Validate the request data
 
         $request->validate([
@@ -86,8 +92,8 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         // Verify if the current password matches the user's password
-        if (!Hash::check($request->currentPassword, $user->password)) {
-            return back()->with('error' , 'Current passsowrd : The current password is incorrect.');
+        if (! Hash::check($request->currentPassword, $user->password)) {
+            return back()->with('error', 'Current passsowrd : The current password is incorrect.');
         }
 
         // Update the user's password

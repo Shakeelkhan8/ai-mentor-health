@@ -20,6 +20,9 @@ class VerifyEmailController extends Controller
         }
 
         if ($request->user()->markEmailAsVerified()) {
+            // Verified documents a MustVerifyEmail user. This app's User model does not implement it
+            // yet (email verification is not enforced), and the event's constructor is untyped at runtime.
+            // @phpstan-ignore-next-line argument.type
             event(new Verified($request->user()));
         }
 

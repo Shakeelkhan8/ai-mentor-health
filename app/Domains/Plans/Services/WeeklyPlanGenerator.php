@@ -94,11 +94,7 @@ class WeeklyPlanGenerator
             'primary_goal' => $profile?->primary_goal,
             'focus_areas' => $focusAreas,
             'habits' => $habits->map(function (Habit $habit) {
-                $focus = $habit->focus_area instanceof HealthFocusArea
-                    ? $habit->focus_area->value
-                    : (string) $habit->focus_area;
-
-                return trim($habit->name.($focus ? " ({$focus})" : ''));
+                return trim("{$habit->name} ({$habit->focus_area->value})");
             })->all(),
             'check_in_patterns' => $patterns,
             'previous_plan' => $previous,

@@ -16,6 +16,7 @@ class DoctorController extends Controller
     public function index()
     {
         $data = Doctor::all();
+
         return view('backend_app.doctors.index', compact('data'));
     }
 
@@ -57,10 +58,10 @@ class DoctorController extends Controller
                 'city' => $request->city,
                 'address' => $request->address,
                 'price' => $request->price,
-                'img' => $img
+                'img' => $img,
             ]);
 
-            return back()->with('success', "Doctor has been added successfully");
+            return back()->with('success', 'Doctor has been added successfully');
         } catch (\Throwable $th) {
             return back()->with('error', $th->getMessage());
         }
@@ -72,6 +73,7 @@ class DoctorController extends Controller
     public function show($id)
     {
         $user = Doctor::find($id);
+
         return view('backend_app.doctors.detail', compact('user'));
     }
 
@@ -110,7 +112,7 @@ class DoctorController extends Controller
                 'address' => $request->address,
             ]);
 
-            return back()->with('success', "Doctor has been updated successfully");
+            return back()->with('success', 'Doctor has been updated successfully');
         } catch (\Throwable $th) {
             return back()->with('error', $th->getMessage());
         }
@@ -134,9 +136,10 @@ class DoctorController extends Controller
                 'user_id' => $user->id,
                 'doctor_id' => $request->doctor_id,
                 'message' => $request->message,
-                'stars' => $request->stars
+                'stars' => $request->stars,
             ]);
-            return back()->with('success', "Feedback has been added successfully");
+
+            return back()->with('success', 'Feedback has been added successfully');
         } catch (\Throwable $th) {
             return back()->with('error', $th->getMessage());
         }
