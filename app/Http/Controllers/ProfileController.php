@@ -13,6 +13,7 @@ use Illuminate\View\View;
 use App\Models\User;
 use App\Models\File;
 use App\Models\Ledger;
+use App\Support\ImageUpload;
 use Illuminate\Support\Facades\Hash;
 class ProfileController extends Controller
 {
@@ -34,11 +35,7 @@ class ProfileController extends Controller
        $user=Auth::user();
        $data=User::find($user->id);
        if ($request->hasFile('img')){
-        $image=$request->file('img');
-        $imagename=$request->file('img')->getClientOriginalName();
-        $destinationpath=public_path('assets/users/');
-        $image->move($destinationpath,$imagename);
-        $data->img=$imagename;
+        $data->img=ImageUpload::store($request->file('img'), 'avatars');
        }
 
        $data->name=$request->name;
