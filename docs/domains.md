@@ -24,7 +24,8 @@ Legacy marketplace models remain in `app/Models` until migrated or removed.
 | `coach_conversations` | Coaching | chat threads |
 | `coach_messages` | Coaching | role + content |
 | `weekly_plans` | Plans | unique per user/week_start |
-| `subscriptions` | Billing | Stripe ids + status |
+| `subscriptions` | Billing | Stripe ids + status; `stripe_event_at` = last applied webhook event |
+| `stripe_webhook_events` | Billing | processed Stripe event ids (webhook idempotency) |
 
 ## HTTP surface (MVP)
 

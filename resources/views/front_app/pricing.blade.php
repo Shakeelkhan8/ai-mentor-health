@@ -22,7 +22,7 @@
                             <div class="w-100 float-left">
                                 <ul class="text-left list-unstyled">
                                     <li><i class="fas fa-check"></i> Health onboarding &amp; goals</li>
-                                    <li><i class="fas fa-check"></i> Personalized AI coach</li>
+                                    <li><i class="fas fa-check"></i> Personalized AI coach ({{ config('mentor.limits.free_coach_messages_per_day') }} messages a day)</li>
                                     <li><i class="fas fa-check"></i> Habit check-ins</li>
                                     <li><i class="fas fa-check"></i> Weekly wellness plans</li>
                                 </ul>
@@ -42,10 +42,10 @@
                             <div class="w-100 float-left">
                                 <ul class="text-left list-unstyled">
                                     <li><i class="fas fa-check"></i> Everything in Free</li>
+                                    <li><i class="fas fa-check"></i> Unlimited AI coach messages</li>
                                     <li><i class="fas fa-check"></i> Stripe Checkout (test cards)</li>
                                     <li><i class="fas fa-check"></i> Webhook-synced subscription status</li>
-                                    <li><i class="fas fa-check"></i> Ready for future entitlements</li>
-                                </ul>
+                                                                    </ul>
                             </div>
                             <div class="generic-btn">
                                 <a href="{{ route('login') }}">Try Pro checkout</a>
@@ -54,7 +54,7 @@
                     </div>
                 </div>
                 <p class="text-center mt-4" data-aos="fade-up" data-aos-duration="600">
-                    Pro does <strong>not</strong> lock features in this MVP — soft CTA only so demos stay frictionless.
+                    Free includes {{ config('mentor.limits.free_coach_messages_per_day') }} AI coach messages a day, reset at midnight in your timezone. Pro is unlimited.
                 </p>
             </div>
         </div>
