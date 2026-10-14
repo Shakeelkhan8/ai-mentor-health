@@ -3,14 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Mail\NewsLetterMail;
-use App\Models\DiscountForm;
-use App\Models\Form;
 use Illuminate\Http\Request;
-use App\Models\File;
-use App\Models\Client;
 use App\Models\ContactForm;
-use App\Models\Distributor;
-use App\Models\Ledger;
 use Mail;
 
 
@@ -20,44 +14,6 @@ class MainController extends Controller
     {
 
         return view('backend_app.index');
-    }
-
-    public function delete_all(Request $request)
-    {
-
-        if ($request->datafrom === "files") {
-            foreach ($request->items as $key => $value) {
-                Ledger::where('file_id', $value)->delete();
-                File::destroy($value);
-            }
-        } elseif ($request->datafrom === "dealers") {
-
-            foreach ($request->items as $key => $value) {
-                File::where('distributor_id', $value)->update(['distributor_id' => null]);
-                Distributor::destroy($value);
-            }
-        } elseif ($request->datafrom === "clients") {
-
-            foreach ($request->items as $key => $value) {
-                Client::destroy($value);
-            }
-        } elseif ($request->datafrom === "discounted") {
-
-            foreach ($request->items as $key => $value) {
-                DiscountForm::destroy($value);
-            }
-        } elseif ($request->datafrom === "customer") {
-
-            foreach ($request->items as $key => $value) {
-                Form::destroy($value);
-            }
-        }
-
-        $response = [
-            "success" => true,
-            "message" => "Your Files has been deleted successfully"
-        ];
-        return response()->json($response);
     }
 
     public function send_Mail(Request $request)
