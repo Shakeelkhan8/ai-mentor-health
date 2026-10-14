@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\Doctor;
-use Illuminate\Http\Request;
-use Stripe\Stripe;
-use Stripe\Checkout\Session;
-use Illuminate\Support\Facades\Redirect;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
+use Stripe\Checkout\Session;
+use Stripe\Stripe;
 
 class AppointmentController extends Controller
 {
@@ -18,8 +18,9 @@ class AppointmentController extends Controller
      */
     public function index()
     {
-        $doctors=Doctor::with('appointments')->paginate(10);
-        return view('backend_app.appointments.index',compact('doctors'));
+        $doctors = Doctor::with('appointments')->paginate(10);
+
+        return view('backend_app.appointments.index', compact('doctors'));
     }
 
     /**
@@ -27,7 +28,7 @@ class AppointmentController extends Controller
      */
     public function create()
     {
-        
+
     }
 
     /**
@@ -39,13 +40,13 @@ class AppointmentController extends Controller
         $doctor = Doctor::findOrFail($request->doctor_id);
         $appointmentDate = $request->input('appointment_date');
         $dateTime = Carbon::parse($appointmentDate);
-        
+
         // Separate date and time
         $date = $dateTime->toDateString(); // Y-m-d format as a date type, e.g., "2024-10-30"
-        $time = $dateTime->toTimeString(); 
+        $time = $dateTime->toTimeString();
         // Set Stripe API Key
         Stripe::setApiKey(env('STRIPE_SECRET'));
-    
+
         // Define the checkout session
         $checkoutSession = Session::create([
             'payment_method_types' => ['card'],
@@ -64,57 +65,59 @@ class AppointmentController extends Controller
                 'doctor_id' => $doctor->id,
                 'user_id' => $user->id,
                 'appointment_date' => $date,
-                'start_time'=>$time
+                'start_time' => $time,
             ]),
             'cancel_url' => route('appointment.cancel'),
         ]);
-    
+
         // Redirect to Stripe Checkout page
         return Redirect::away($checkoutSession->url);
     }
 
-
-    public function appointmentSuccess(Request $request){
-       try {
-        Appointment::create([
-            'user_id'=>$request->user_id,
-            'doctor_id'=>$request->doctor_id,
-            'date'=>$request->appointment_date,
-            'start_time'=>$request->start_time,
-        ]);
-        $doctor=Doctor::find($request->doctor_id);
-        createNotification($request->user_id,"Payment Success", 'Appointment has been booked successfully with Dr '.$doctor->name);
-        return view('backend_app.payment_status.success');
-       } catch (\Throwable $th) {
-        return $th->getMessage();
-       }
-    }
-
-    public function appointmentCancel(){
+    public function appointmentSuccess(Request $request)
+    {
         try {
-           return view('backend_app.payment_status.cancelled');
+            Appointment::create([
+                'user_id' => $request->user_id,
+                'doctor_id' => $request->doctor_id,
+                'date' => $request->appointment_date,
+                'start_time' => $request->start_time,
+            ]);
+            $doctor = Doctor::find($request->doctor_id);
+            createNotification($request->user_id, 'Payment Success', 'Appointment has been booked successfully with Dr '.$doctor->name);
+
+            return view('backend_app.payment_status.success');
         } catch (\Throwable $th) {
             return $th->getMessage();
         }
     }
+
+    public function appointmentCancel()
+    {
+        try {
+            return view('backend_app.payment_status.cancelled');
+        } catch (\Throwable $th) {
+            return $th->getMessage();
+        }
+    }
+
     /**
      * Display the specified resource.
      */
     public function show()
     {
         try {
-            $user=Auth::user();
-            if($user->role === "admin"){
-            $data=Appointment::with('user')->paginate(15);
-        }   
-        else{
-        $data=Appointment::with('user','doctor')->where('user_id',$user->id)->paginate(15);
-        }
+            $user = Auth::user();
+            if ($user->role === 'admin') {
+                $data = Appointment::with('user')->paginate(15);
+            } else {
+                $data = Appointment::with('user', 'doctor')->where('user_id', $user->id)->paginate(15);
+            }
 
-        return view('backend_app.appointments.show',compact('data'));
+            return view('backend_app.appointments.show', compact('data'));
 
         } catch (\Throwable $th) {
-            return back()->with("error",$th->getMessage());
+            return back()->with('error', $th->getMessage());
         }
     }
 

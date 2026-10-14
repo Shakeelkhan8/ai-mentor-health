@@ -19,7 +19,7 @@ class Doctor extends Model
         'city',
         'address',
         'price',
-        'img'
+        'img',
     ];
 
     public function appointments(): HasMany
