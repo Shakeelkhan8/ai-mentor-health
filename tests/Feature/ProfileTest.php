@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Domains\Identity\Enums\HealthFocusArea;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -10,9 +11,26 @@ class ProfileTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_profile_page_is_displayed(): void
+    /**
+     * Profile routes sit behind the `onboarded` middleware, so the user needs a completed profile.
+     */
+    private function onboardedUser(): User
     {
         $user = User::factory()->create();
+
+        $user->profile()->create([
+            'focus_areas' => [HealthFocusArea::Sleep->value],
+            'primary_goal' => 'Sleep consistently',
+            'timezone' => 'UTC',
+            'onboarding_completed_at' => now(),
+        ]);
+
+        return $user;
+    }
+
+    public function test_profile_page_is_displayed(): void
+    {
+        $user = $this->onboardedUser();
 
         $response = $this
             ->actingAs($user)
@@ -23,10 +41,11 @@ class ProfileTest extends TestCase
 
     public function test_profile_information_can_be_updated(): void
     {
-        $user = User::factory()->create();
+        $user = $this->onboardedUser();
 
         $response = $this
             ->actingAs($user)
+            ->from('/profile')
             ->patch('/profile', [
                 'name' => 'Test User',
                 'email' => 'test@example.com',
@@ -45,10 +64,11 @@ class ProfileTest extends TestCase
 
     public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
     {
-        $user = User::factory()->create();
+        $user = $this->onboardedUser();
 
         $response = $this
             ->actingAs($user)
+            ->from('/profile')
             ->patch('/profile', [
                 'name' => 'Test User',
                 'email' => $user->email,
@@ -63,7 +83,7 @@ class ProfileTest extends TestCase
 
     public function test_user_can_delete_their_account(): void
     {
-        $user = User::factory()->create();
+        $user = $this->onboardedUser();
 
         $response = $this
             ->actingAs($user)
@@ -81,7 +101,7 @@ class ProfileTest extends TestCase
 
     public function test_correct_password_must_be_provided_to_delete_account(): void
     {
-        $user = User::factory()->create();
+        $user = $this->onboardedUser();
 
         $response = $this
             ->actingAs($user)
