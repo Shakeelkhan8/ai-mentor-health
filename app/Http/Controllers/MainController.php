@@ -10,12 +10,6 @@ use Mail;
 
 class MainController extends Controller
 {
-    public function index()
-    {
-
-        return view('backend_app.index');
-    }
-
     public function send_Mail(Request $request)
     {
         $request->validate([
