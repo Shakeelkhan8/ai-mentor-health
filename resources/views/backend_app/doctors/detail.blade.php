@@ -22,7 +22,7 @@
                       <div class="d-flex align-items-center flex-column">
                         <img
                           class="img-fluid rounded mb-3 pt-1 mt-4"
-                          src="{{ asset('assets/doctors/' . $user->img) }}" onerror="this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT45gcJLX6J9Wlyr4rFHA3beqZJbTyCvo_0whWJegVnZQ&s'"
+                          src="{{ asset('assets/doctors/' . $user->img) }}" onerror="this.onerror=null;this.src='{{ asset('assets/img/avatars/default.svg') }}'"
                           height="100"
                           width="100"
                           alt="User avatar" />
@@ -101,7 +101,7 @@
                           width="50"
                           class=" rounded-circle" 
                           src="{{ asset('assets/users/'.$item->img) }}" 
-                          onerror="this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT45gcJLX6J9Wlyr4rFHA3beqZJbTyCvo_0whWJegVnZQ&s'" 
+                          onerror="this.onerror=null;this.src='{{ asset('assets/img/avatars/default.svg') }}'" 
                           alt=""
                         >
                       </div>

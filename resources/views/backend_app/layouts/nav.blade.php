@@ -89,7 +89,7 @@ id="layout-navbar">
                   <div class="d-flex">
                     <div class="flex-shrink-0 me-3">
                       <div class="avatar">
-                        <img src="{{ asset('assets/users/'.$item->user->img) }}" onerror="this.src=''https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI=" alt class="h-auto rounded-circle" />
+                        <img src="{{ asset('assets/users/'.$item->user->img) }}" onerror="this.onerror=null;this.src='{{ asset('assets/img/avatars/default.svg') }}'" alt class="h-auto rounded-circle" />
                       </div>
                     </div>
                     <div class="flex-grow-1">
@@ -127,7 +127,7 @@ id="layout-navbar">
     <li class="nav-item navbar-dropdown dropdown-user dropdown">
       <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
         <div class="avatar avatar-online">
-          <img src="{{asset("assets/users/".$user->img )}}" onerror="this.src='https://macromissionary.com/wp-content/uploads/2021/10/dummy-avatar-2.jpg'" alt    class="h-auto rounded-circle" />
+          <img src="{{asset("assets/users/".$user->img )}}" onerror="this.onerror=null;this.src='{{ asset('assets/img/avatars/default.svg') }}'" alt    class="h-auto rounded-circle" />
         </div>
       </a>
       <ul class="dropdown-menu dropdown-menu-end">
@@ -136,7 +136,7 @@ id="layout-navbar">
             <div class="d-flex">
               <div class="flex-shrink-0 me-3">
                 <div class="avatar avatar-online">
-                  <img src="{{asset("assets/users/".$user->img )}}" onerror="this.src='https://macromissionary.com/wp-content/uploads/2021/10/dummy-avatar-2.jpg'" alt class="h-auto rounded-circle" />
+                  <img src="{{asset("assets/users/".$user->img )}}" onerror="this.onerror=null;this.src='{{ asset('assets/img/avatars/default.svg') }}'" alt class="h-auto rounded-circle" />
                 </div>
               </div>
               <div class="flex-grow-1">
