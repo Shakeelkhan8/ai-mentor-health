@@ -12,7 +12,7 @@ interface BillingGateway
      *   user_id: int,
      *   email: string,
      *   name?: string|null,
-     *   price_id: string,
+     *   price_id?: string|null,
      *   success_url: string,
      *   cancel_url: string,
      *   customer_id?: string|null

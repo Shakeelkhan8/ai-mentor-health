@@ -15,7 +15,7 @@ if (!function_exists('createNotification')) {
             ]);
             return true;
         } catch (\Exception $e) { // More specific error handling
-            Log::info("notification creation error :", $e->getMessage());
+            Log::warning('Notification creation failed', ['user_id' => $user_id, 'error' => $e->getMessage()]);
         }
     }
 }

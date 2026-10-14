@@ -14,16 +14,13 @@ use Illuminate\Support\Facades\DB;
 
 class RecordHabitCheckIn extends Action
 {
-    /**
-     * @param  array{status: string, note?: string|null, mood_score?: int|null}  $payload
-     */
     public function execute(mixed ...$args): mixed
     {
         /** @var User $user */
         $user = $args[0];
         /** @var Habit|int $habit */
         $habit = $args[1];
-        /** @var array $payload */
+        /** @var array{status?: string, note?: string|null, mood_score?: int|null} $payload */
         $payload = $args[2];
 
         if (! $habit instanceof Habit) {
@@ -61,7 +58,7 @@ class RecordHabitCheckIn extends Action
                 'user_id' => $user->id,
                 'status' => $status,
                 'note' => isset($payload['note']) ? trim((string) $payload['note']) : null,
-                'mood_score' => $payload['mood_score'] ?? null,
+                'mood_score' => $mood,
                 'check_in_date' => $today,
             ];
 

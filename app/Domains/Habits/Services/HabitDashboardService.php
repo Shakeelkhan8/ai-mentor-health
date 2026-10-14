@@ -52,7 +52,7 @@ class HabitDashboardService
         });
 
         $completedToday = $habits->filter(
-            fn (Habit $habit) => $habit->today_check_in?->status === CheckInStatus::Done
+            fn (Habit $habit) => $habit->getAttribute('today_check_in')?->status === CheckInStatus::Done
         )->count();
 
         $totalActive = $habits->count();

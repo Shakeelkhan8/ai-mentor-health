@@ -14,14 +14,13 @@ use Illuminate\Support\Facades\DB;
 class CompleteOnboarding extends Action
 {
     /**
-     * @param  array{focus_areas: array<int, string>, primary_goal: string, timezone?: string|null}  $payload
      * @return array{profile: UserProfile, habits_created: int}
      */
     public function execute(mixed ...$args): mixed
     {
         /** @var User $user */
         $user = $args[0];
-        /** @var array $payload */
+        /** @var array{focus_areas?: array<int, string>, primary_goal?: string, timezone?: string|null} $payload */
         $payload = $args[1];
 
         $focusAreas = array_values(array_unique($payload['focus_areas'] ?? []));
