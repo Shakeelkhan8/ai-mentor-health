@@ -7,6 +7,8 @@ use App\Domains\Billing\Models\Subscription;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SubscriptionSyncService
 {
@@ -23,8 +25,9 @@ class SubscriptionSyncService
 
     /**
      * @param  array<string, mixed>  $session
+     * @param  Carbon|null  $eventAt  creation time of the Stripe event; older events than the last applied are ignored
      */
-    public function syncFromCheckoutSession(array $session): ?Subscription
+    public function syncFromCheckoutSession(array $session, ?Carbon $eventAt = null): ?Subscription
     {
         if (data_get($session, 'mode') !== 'subscription') {
             return null;
@@ -68,13 +71,14 @@ class SubscriptionSyncService
                 'mode' => data_get($session, 'mode'),
                 'payment_status' => $paymentStatus,
             ],
-        ]);
+        ], $eventAt);
     }
 
     /**
      * @param  array<string, mixed>  $stripeSubscription
+     * @param  Carbon|null  $eventAt  creation time of the Stripe event; older events than the last applied are ignored
      */
-    public function syncFromStripeSubscription(array $stripeSubscription): ?Subscription
+    public function syncFromStripeSubscription(array $stripeSubscription, ?Carbon $eventAt = null): ?Subscription
     {
         $subscriptionId = data_get($stripeSubscription, 'id');
         if (blank($subscriptionId)) {
@@ -124,34 +128,50 @@ class SubscriptionSyncService
                 'stripe_status' => data_get($stripeSubscription, 'status'),
                 'cancel_at_period_end' => data_get($stripeSubscription, 'cancel_at_period_end'),
             ], fn ($v) => $v !== null),
-        ]);
+        ], $eventAt);
     }
 
     /**
+     * Create or update by stripe_subscription_id.
+     *
+     * Runs inside HandleStripeWebhook's transaction. The row is locked for the rest of
+     * it, so two deliveries for the same subscription apply one after the other, and an
+     * event created before the last applied one is skipped. Stripe timestamps have
+     * one-second resolution: events from the same second apply in arrival order.
+     *
      * @param  array<string, mixed>  $attributes
      */
-    private function upsertSubscription(array $attributes): Subscription
+    private function upsertSubscription(array $attributes, ?Carbon $eventAt): Subscription
     {
-        $subscription = Subscription::query()
-            ->where('stripe_subscription_id', $attributes['stripe_subscription_id'])
-            ->first();
-
-        if ($subscription) {
-            $subscription->fill($attributes)->save();
-
-            return $subscription->fresh();
+        if ($eventAt !== null) {
+            $attributes['stripe_event_at'] = $eventAt;
         }
 
-        try {
-            return Subscription::query()->create($attributes);
-        } catch (UniqueConstraintViolationException) {
-            $subscription = Subscription::query()
-                ->where('stripe_subscription_id', $attributes['stripe_subscription_id'])
-                ->firstOrFail();
+        $stripeId = $attributes['stripe_subscription_id'];
+        $subscription = Subscription::query()->where('stripe_subscription_id', $stripeId)->lockForUpdate()->first();
 
-            $subscription->fill($attributes)->save();
-
-            return $subscription->fresh();
+        if ($subscription === null) {
+            try {
+                // Savepoint: if a concurrent delivery inserts the same subscription first, only
+                // the savepoint rolls back. PostgreSQL would otherwise abort the whole transaction.
+                return DB::transaction(fn () => Subscription::query()->create($attributes));
+            } catch (UniqueConstraintViolationException) {
+                $subscription = Subscription::query()->where('stripe_subscription_id', $stripeId)->lockForUpdate()->firstOrFail();
+            }
         }
+
+        if ($eventAt !== null && $subscription->stripe_event_at?->gt($eventAt)) {
+            Log::info('Stripe webhook older than the applied state; skipped', [
+                'stripe_subscription_id' => $stripeId,
+                'event_at' => $eventAt->toIso8601String(),
+                'applied_event_at' => $subscription->stripe_event_at->toIso8601String(),
+            ]);
+
+            return $subscription;
+        }
+
+        $subscription->fill($attributes)->save();
+
+        return $subscription->fresh();
     }
 }

@@ -19,6 +19,7 @@ class Subscription extends Model
         'current_period_starts_at',
         'current_period_ends_at',
         'canceled_at',
+        'stripe_event_at',
         'meta',
     ];
 
@@ -28,6 +29,7 @@ class Subscription extends Model
         'current_period_starts_at' => 'datetime',
         'current_period_ends_at' => 'datetime',
         'canceled_at' => 'datetime',
+        'stripe_event_at' => 'datetime',
         'meta' => 'array',
     ];
 

@@ -107,6 +107,7 @@ class StripeBillingGateway implements BillingGateway
                 return [
                     'id' => (string) ($decoded['id'] ?? ''),
                     'type' => (string) ($decoded['type'] ?? ''),
+                    'created' => (int) ($decoded['created'] ?? 0),
                     'data' => (array) ($decoded['data'] ?? []),
                 ];
             }
@@ -123,6 +124,7 @@ class StripeBillingGateway implements BillingGateway
         return [
             'id' => (string) ($array['id'] ?? ''),
             'type' => (string) ($array['type'] ?? ''),
+            'created' => (int) ($array['created'] ?? 0),
             'data' => (array) ($array['data'] ?? []),
         ];
     }

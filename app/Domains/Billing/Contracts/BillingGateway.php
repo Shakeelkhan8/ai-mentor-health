@@ -23,8 +23,9 @@ interface BillingGateway
 
     /**
      * Verify signature (when configured) and return event payload as array.
+     * `created` is the event's Unix creation time, used to discard out-of-order deliveries.
      *
-     * @return array{id: string, type: string, data: array}
+     * @return array{id: string, type: string, created: int, data: array}
      */
     public function parseWebhook(string $payload, ?string $signatureHeader): array;
 }
