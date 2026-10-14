@@ -49,4 +49,19 @@ return [
     'limits' => [
         'free_coach_messages_per_day' => (int) env('FREE_COACH_MESSAGES_PER_DAY', 10),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Public demo
+    |--------------------------------------------------------------------------
+    | DEMO_MODE=true is for the hosted demo only:
+    | - the AI coach answers with pre-written replies (no provider calls, no cost);
+    | - the login page offers "Try the demo", which signs into a shared, pre-filled
+    |   account seeded by Database\Seeders\DemoSeeder;
+    | - that shared account's password, email and profile can't be changed or deleted.
+    */
+    'demo' => [
+        'enabled' => (bool) env('DEMO_MODE', false),
+        'email' => 'demo@ai-mentor-health.test',
+    ],
 ];

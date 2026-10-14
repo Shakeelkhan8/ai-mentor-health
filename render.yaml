@@ -1,0 +1,32 @@
+# Render Blueprint for the free hosted demo: https://render.com/docs/blueprint-spec
+# Setup steps and trade-offs: docs/DEPLOY.md
+services:
+  - type: web
+    name: ai-mentor-health
+    runtime: docker
+    plan: free
+    healthCheckPath: /up
+    envVars:
+      # Pre-written coach replies (no AI costs), "Try the demo" button, protected demo account.
+      - key: DEMO_MODE
+        value: "true"
+      # Render terminates HTTPS at its proxy; the app is only reachable through it.
+      - key: TRUSTED_PROXIES
+        value: "*"
+      - key: SESSION_SECURE_COOKIE
+        value: "true"
+      # SQLite inside the container: free, no expiry, and reset to the seeded demo on
+      # every restart. To keep data, attach a database and set DB_CONNECTION and DATABASE_URL.
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: DB_DATABASE
+        value: /app/database/demo.sqlite
+      - key: SESSION_DRIVER
+        value: file
+      - key: CACHE_DRIVER
+        value: file
+      - key: QUEUE_CONNECTION
+        value: sync
+      # No outgoing email from the demo; messages are written to the logs.
+      - key: MAIL_MAILER
+        value: log
