@@ -1,5 +1,4 @@
 import './bootstrap';
-import './flatpicker'
 import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;
