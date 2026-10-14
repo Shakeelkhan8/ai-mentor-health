@@ -6,12 +6,14 @@ use App\Domains\Coaching\Contracts\AiCoachClient;
 use App\Domains\Habits\Enums\HabitFrequency;
 use App\Domains\Habits\Models\Habit;
 use App\Domains\Identity\Enums\HealthFocusArea;
+use App\Domains\Plans\Actions\GenerateWeeklyPlan;
 use App\Domains\Plans\Models\WeeklyPlan;
 use App\Domains\Plans\Services\WeeklyPlanGenerator;
 use App\Domains\Shared\Exceptions\DomainException;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class WeeklyPlanTest extends TestCase
@@ -146,5 +148,27 @@ class WeeklyPlanTest extends TestCase
             ->assertSee($plan->title);
 
         Carbon::setTestNow();
+    }
+
+    public function test_weekly_plan_ai_call_runs_outside_a_database_transaction(): void
+    {
+        $user = $this->onboardedUser();
+        $levels = [];
+
+        $this->mock(AiCoachClient::class, function ($mock) use (&$levels) {
+            $mock->shouldReceive('complete')->andReturnUsing(function () use (&$levels) {
+                $levels[] = DB::transactionLevel();
+
+                return 'not json, so the generator uses its fallback plan';
+            });
+        });
+
+        // RefreshDatabase wraps each test in one transaction; anything above that is ours.
+        $baseline = DB::transactionLevel();
+
+        app(GenerateWeeklyPlan::class)->execute($user);
+
+        $this->assertSame([$baseline], $levels);
+        $this->assertSame(1, WeeklyPlan::query()->count());
     }
 }

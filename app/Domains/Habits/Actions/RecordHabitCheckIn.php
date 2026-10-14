@@ -66,10 +66,13 @@ class RecordHabitCheckIn extends Action
                 $checkIn->fill($attributes)->save();
             } else {
                 try {
-                    $checkIn = HabitCheckIn::query()->create([
+                    // Savepoint: if a concurrent request inserted today's check-in first, only the
+                    // savepoint rolls back. PostgreSQL would otherwise abort the whole transaction
+                    // and the fallback query below would fail.
+                    $checkIn = DB::transaction(fn () => HabitCheckIn::query()->create([
                         'habit_id' => $habit->id,
                         ...$attributes,
-                    ]);
+                    ]));
                 } catch (UniqueConstraintViolationException) {
                     $checkIn = HabitCheckIn::query()
                         ->where('habit_id', $habit->id)

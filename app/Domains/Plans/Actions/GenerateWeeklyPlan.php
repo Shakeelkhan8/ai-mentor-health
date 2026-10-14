@@ -31,14 +31,16 @@ class GenerateWeeklyPlan extends Action
         $timezone = $user->profile->timezone ?: config('app.timezone', 'UTC');
         $weekStart = Carbon::now($timezone)->startOfWeek(Carbon::MONDAY)->toDateString();
 
-        return DB::transaction(function () use ($user, $weekStart) {
-            $existing = WeeklyPlan::query()
-                ->where('user_id', $user->id)
-                ->whereDate('week_start', $weekStart)
-                ->first();
+        $existing = WeeklyPlan::query()
+            ->where('user_id', $user->id)
+            ->whereDate('week_start', $weekStart)
+            ->first();
 
-            $payload = $this->generator->generate($user, $weekStart, $existing);
+        // The generator calls the AI provider (up to ~36 s with retries), so it runs with
+        // no transaction open; only the write below is transactional.
+        $payload = $this->generator->generate($user, $weekStart, $existing);
 
+        return DB::transaction(function () use ($user, $weekStart, $existing, $payload) {
             $attributes = [
                 'status' => PlanStatus::Active,
                 'title' => $payload['title'],
@@ -53,10 +55,13 @@ class GenerateWeeklyPlan extends Action
                 $plan = $existing->fresh();
             } else {
                 try {
-                    $plan = WeeklyPlan::query()->create([
+                    // Savepoint: if a concurrent request inserted this week's plan first, only the
+                    // savepoint rolls back. PostgreSQL would otherwise abort the whole transaction
+                    // and the fallback query below would fail.
+                    $plan = DB::transaction(fn () => WeeklyPlan::query()->create([
                         'user_id' => $user->id,
                         ...$attributes,
-                    ]);
+                    ]));
                 } catch (UniqueConstraintViolationException) {
                     $plan = WeeklyPlan::query()
                         ->where('user_id', $user->id)

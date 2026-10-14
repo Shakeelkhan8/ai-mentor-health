@@ -40,6 +40,28 @@ jobs:
 
   tests:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # SQLite is what phpunit.xml uses locally. PostgreSQL is a likely production
+        # database, and it aborts a transaction on any failed statement, which SQLite
+        # and MySQL don't (see ConcurrentWritesTest).
+        database: [sqlite, pgsql]
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: mentor_test
+          POSTGRES_USER: mentor
+          POSTGRES_PASSWORD: secret
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U mentor"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
 
     steps:
       - uses: actions/checkout@v4
@@ -47,7 +69,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: pdo_sqlite
+          extensions: pdo_sqlite, pdo_pgsql
           coverage: none
 
       - uses: actions/setup-node@v4
@@ -67,4 +89,18 @@ jobs:
           cp .env.example .env
           php artisan key:generate
 
-      - run: php artisan test
+      - name: Run tests (SQLite)
+        if: matrix.database == 'sqlite'
+        run: php artisan test
+
+      # Real environment variables take precedence over the <env> entries in phpunit.xml.
+      - name: Run tests (PostgreSQL)
+        if: matrix.database == 'pgsql'
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: mentor_test
+          DB_USERNAME: mentor
+          DB_PASSWORD: secret
+        run: php artisan test
