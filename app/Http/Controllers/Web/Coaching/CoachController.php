@@ -59,8 +59,12 @@ class CoachController extends WebController
                 default => 422,
             };
 
+            $message = $e->errorCode === 'ai_provider_error'
+                ? "Your coach is temporarily unavailable, so your message wasn't sent. Please try again in a minute."
+                : $e->getMessage();
+
             return response()->json(array_filter([
-                'error' => $e->getMessage(),
+                'error' => $message,
                 'code' => $e->errorCode,
                 'upgrade_url' => $e->errorCode === 'coach_daily_limit_reached' ? route('billing.show') : null,
             ]), $status);

@@ -11,6 +11,7 @@ use App\Domains\Shared\Actions\Action;
 use App\Domains\Shared\Exceptions\DomainException;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SendCoachMessage extends Action
 {
@@ -47,28 +48,42 @@ class SendCoachMessage extends Action
             );
         }
 
-        return DB::transaction(function () use ($user, $content, $conversationId, $remaining) {
-            $conversation = $this->resolveConversation($user, $conversationId);
+        $conversation = $this->resolveConversation($user, $conversationId);
 
-            $history = $conversation->messages()
-                ->orderByDesc('id')
-                ->limit(self::HISTORY_LIMIT)
-                ->get()
-                ->sortBy('id')
-                ->values()
-                ->map(fn (CoachMessage $message) => [
-                    'role' => $message->role->value,
-                    'content' => $message->content,
-                ])
-                ->all();
+        $history = $conversation->messages()
+            ->orderByDesc('id')
+            ->limit(self::HISTORY_LIMIT)
+            ->get()
+            ->sortBy('id')
+            ->values()
+            ->map(fn (CoachMessage $message) => [
+                'role' => $message->role->value,
+                'content' => $message->content,
+            ])
+            ->all();
 
+        // The AI call can take up to ~30 s, so it runs with no transaction open. Nothing
+        // is saved until it succeeds: a failed reply leaves no half-conversation behind
+        // and uses none of the user's daily allowance.
+        try {
+            $reply = $this->coachingService->reply($content, $history);
+        } catch (DomainException $e) {
+            Log::error('AI coach reply failed', [
+                'user_id' => $user->id,
+                'conversation_id' => $conversation->id,
+                'code' => $e->errorCode,
+                'reason' => $e->getPrevious()?->getMessage() ?? $e->getMessage(),
+            ]);
+
+            throw $e;
+        }
+
+        return DB::transaction(function () use ($user, $content, $conversation, $reply, $remaining) {
             $conversation->messages()->create([
                 'user_id' => $user->id,
                 'role' => MessageRole::User,
                 'content' => $content,
             ]);
-
-            $reply = $this->coachingService->reply($content, $history);
 
             $conversation->messages()->create([
                 'user_id' => $user->id,

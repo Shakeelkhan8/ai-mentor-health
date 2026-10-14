@@ -40,6 +40,8 @@ return [
         'host' => env('RAPIDAPI_HOST', 'meta-llama-3-1-405b.p.rapidapi.com'),
         'coach_url' => env('RAPIDAPI_COACH_URL', 'https://meta-llama-3-1-405b.p.rapidapi.com/'),
         'model' => env('RAPIDAPI_MODEL', 'llama-3.1-405b'),
+        // Base delay between retries of a failed AI request (doubles each attempt).
+        'retry_delay_ms' => (int) env('RAPIDAPI_RETRY_DELAY_MS', 250),
     ],
 
     'stripe' => [
