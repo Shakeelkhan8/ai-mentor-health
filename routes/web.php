@@ -41,7 +41,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->middleware('feature:habit_tracking')
             ->name('habits.check-ins.store');
 
-        Route::get('community-form', [MainController::class, 'forms'])->name('community-forms');
+        Route::get('community-form', [MainController::class, 'forms'])
+            ->middleware('can:admin')
+            ->name('community-forms');
         Route::get('edit-profile', [ProfileController::class, 'edit_profile'])->name('edit_profile');
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
