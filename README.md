@@ -73,14 +73,16 @@ Requires PHP **8.2 or newer** (CI runs on 8.4) and Node.js for the Vite build.
 
 Follow the 5–10 minute walkthrough: **[docs/DEMO.md](docs/DEMO.md)**
 
-## Tests
+## Tests and code quality
 
 ```bash
 npm run build      # auth pages render through @vite, so build assets first
 php artisan test
+composer lint      # Laravel Pint, style check (run `vendor/bin/pint` to fix)
+composer analyse   # Larastan (PHPStan for Laravel), level 5
 ```
 
-Tests run against in-memory SQLite (configured in `phpunit.xml`), so no database setup is needed. GitHub Actions runs the full suite on every pull request and on pushes to `main`.
+Tests run against in-memory SQLite (configured in `phpunit.xml`), so no database setup is needed. GitHub Actions runs all three checks on every pull request and on pushes to `main`. Larastan runs with no baseline: findings are fixed, not recorded.
 
 ## Pricing model (MVP)
 

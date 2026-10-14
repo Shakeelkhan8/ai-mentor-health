@@ -1,0 +1,13 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+        - config
+        - database
+        - routes
+
+    # Level 5 passes with no baseline: every finding was fixed rather than recorded.
+    # Raise the level when the codebase is ready; don't add a baseline to get there.
+    level: 5
