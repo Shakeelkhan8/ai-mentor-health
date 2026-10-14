@@ -19,10 +19,8 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request,$id): View
+    public function edit(Request $request): View
     {
-
-
         return view('profile.edit', [
             'user' => $request->user(),
         ]);
@@ -45,6 +43,10 @@ class ProfileController extends Controller
 
        $data->name=$request->name;
        $data->email=$request->email;
+       // A new address has not been verified yet.
+       if ($data->isDirty('email')) {
+           $data->email_verified_at = null;
+       }
        $data->organization=$request->organization;
        $data->phone_no=$request->phone_no;
        $data->address=$request->address;
