@@ -37,7 +37,7 @@
                         <td style="width:20%;">
                             <div class="avatar avatar-sm pull-up">
                                 <a href="{{route('show-doctor',['id'=>$user->id])}}">
-                                <img class="rounded-circle me-1 border" src="{{ asset('assets/doctors/' . $user->img) }}" onerror="this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT45gcJLX6J9Wlyr4rFHA3beqZJbTyCvo_0whWJegVnZQ&s'" alt="Avatar">
+                                <img class="rounded-circle me-1 border" src="{{ asset('assets/doctors/' . $user->img) }}" onerror="this.onerror=null;this.src='{{ asset('assets/img/avatars/default.svg') }}'" alt="Avatar">
                                 {{ $user->name }}
                             </a>
                             </div>
