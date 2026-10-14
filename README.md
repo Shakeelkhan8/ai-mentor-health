@@ -1,5 +1,7 @@
 # AI Mentor Health
 
+[![tests](https://github.com/Shakeelkhan8/ai-mentor-health/actions/workflows/tests.yml/badge.svg)](https://github.com/Shakeelkhan8/ai-mentor-health/actions/workflows/tests.yml)
+
 **AI Mentor Health is an AI-powered wellness companion that helps users build healthier habits through personalized coaching, progress tracking, and weekly wellness plans.**
 
 It is **not** a generic chatbot. It remembers user goals and focus areas, tracks daily habit check-ins, generates personalized weekly plans, and supports a Pro subscription via Stripe (test mode).
@@ -49,7 +51,7 @@ npm install && npm run build
 php artisan serve
 ```
 
-PHP **8.3** recommended for this lockfile.
+Requires PHP **8.2 or newer** (CI runs on 8.4) and Node.js for the Vite build.
 
 ### Important env vars
 
@@ -73,8 +75,11 @@ Follow the 5–10 minute walkthrough: **[docs/DEMO.md](docs/DEMO.md)**
 ## Tests
 
 ```bash
-php artisan test --filter="OnboardingTest|SendCoachMessageTest|WeeklyPlanTest|SubscriptionBillingTest"
+npm run build      # auth pages render through @vite, so build assets first
+php artisan test
 ```
+
+Tests run against in-memory SQLite (configured in `phpunit.xml`), so no database setup is needed. GitHub Actions runs the full suite on every pull request and on pushes to `main`.
 
 ## Pricing model (MVP)
 
