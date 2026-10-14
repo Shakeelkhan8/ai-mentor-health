@@ -29,11 +29,11 @@
                     @else
                         <h5 class="mb-2">Free experience</h5>
                         <p class="mb-2 text-muted">
-                            Coaching, habit check-ins, and weekly plans are available now without a paywall.
+                            Habit check-ins and weekly plans are included, plus {{ config('mentor.limits.free_coach_messages_per_day') }} AI coach messages a day.
                         </p>
-                        <h6 class="mb-2">Pro subscription (concept)</h6>
+                        <h6 class="mb-2">Pro subscription</h6>
                         <p class="mb-3 text-muted">
-                            Subscribe via Stripe test Checkout to demonstrate billing. Features are <strong>not</strong> blocked behind Pro yet.
+                            Unlimited AI coach messages. Subscribe via Stripe Checkout (test mode).
                         </p>
                         @if ($priceConfigured)
                             <form method="POST" action="{{ route('billing.checkout') }}">

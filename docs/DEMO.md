@@ -62,7 +62,7 @@ Goal: show the **aha moment** — the product remembers you, coaches you, tracks
 ### 6. Show subscription / billing (test mode) (~1–2 min)
 
 1. Sidebar → **Billing** (`/billing`)
-2. Explain **Free vs Pro** (soft CTA — features are not locked)
+2. Explain **Free vs Pro**: Free gets 10 AI coach messages a day (shown on the coach page), Pro is unlimited
 3. Click **Subscribe with Stripe** (requires Stripe test config)
 4. Complete Checkout with a [Stripe test card](https://stripe.com/docs/testing) (`4242…`)
 5. Land on success; with webhooks configured, subscription status becomes `active`

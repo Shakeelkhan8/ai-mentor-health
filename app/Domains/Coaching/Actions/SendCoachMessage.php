@@ -6,6 +6,7 @@ use App\Domains\Coaching\Enums\MessageRole;
 use App\Domains\Coaching\Models\CoachConversation;
 use App\Domains\Coaching\Models\CoachMessage;
 use App\Domains\Coaching\Services\CoachingService;
+use App\Domains\Coaching\Services\CoachUsage;
 use App\Domains\Shared\Actions\Action;
 use App\Domains\Shared\Exceptions\DomainException;
 use App\Models\User;
@@ -17,11 +18,12 @@ class SendCoachMessage extends Action
 
     public function __construct(
         private readonly CoachingService $coachingService,
+        private readonly CoachUsage $usage,
     ) {
     }
 
     /**
-     * @return array{conversation_id: int, message: string}
+     * @return array{conversation_id: int, message: string, remaining_today: int|null}
      */
     public function execute(mixed ...$args): mixed
     {
@@ -34,7 +36,18 @@ class SendCoachMessage extends Action
             throw new DomainException('Message cannot be empty.', 'empty_message');
         }
 
-        return DB::transaction(function () use ($user, $content, $conversationId) {
+        // Checked before any write or AI call, so a blocked message costs nothing.
+        $remaining = $this->usage->remainingToday($user);
+        if ($remaining === 0) {
+            $limit = $this->usage->dailyLimit($user);
+
+            throw new DomainException(
+                "You've used your {$limit} free coach messages for today. Upgrade to Pro for unlimited coaching, or come back tomorrow.",
+                'coach_daily_limit_reached',
+            );
+        }
+
+        return DB::transaction(function () use ($user, $content, $conversationId, $remaining) {
             $conversation = $this->resolveConversation($user, $conversationId);
 
             $history = $conversation->messages()
@@ -72,6 +85,7 @@ class SendCoachMessage extends Action
             return [
                 'conversation_id' => $conversation->id,
                 'message' => $reply,
+                'remaining_today' => $remaining === null ? null : $remaining - 1,
             ];
         });
     }

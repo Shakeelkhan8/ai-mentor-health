@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web\Coaching;
 
 use App\Domains\Coaching\Actions\SendCoachMessage;
 use App\Domains\Coaching\Models\CoachConversation;
+use App\Domains\Coaching\Services\CoachUsage;
 use App\Domains\Shared\Exceptions\DomainException;
 use App\Http\Controllers\Web\WebController;
 use App\Http\Requests\Coaching\SendCoachMessageRequest;
@@ -13,8 +14,10 @@ use Throwable;
 
 class CoachController extends WebController
 {
-    public function index(): View
+    public function index(CoachUsage $usage): View
     {
+        $user = auth()->user();
+
         $conversation = CoachConversation::query()
             ->where('user_id', auth()->id())
             ->where('is_active', true)
@@ -27,6 +30,8 @@ class CoachController extends WebController
             'conversation' => $conversation,
             'disclaimer' => config('mentor.disclaimer'),
             'productName' => config('mentor.name'),
+            'dailyLimit' => $usage->dailyLimit($user),
+            'remainingToday' => $usage->remainingToday($user),
         ]);
     }
 
@@ -44,18 +49,21 @@ class CoachController extends WebController
             return response()->json([
                 'conversation_id' => $result['conversation_id'],
                 'message' => $result['message'],
+                'remaining_today' => $result['remaining_today'],
             ]);
         } catch (DomainException $e) {
             $status = match ($e->errorCode) {
                 'ai_not_configured', 'ai_provider_error' => 503,
                 'conversation_not_found' => 404,
+                'coach_daily_limit_reached' => 429,
                 default => 422,
             };
 
-            return response()->json([
+            return response()->json(array_filter([
                 'error' => $e->getMessage(),
                 'code' => $e->errorCode,
-            ], $status);
+                'upgrade_url' => $e->errorCode === 'coach_daily_limit_reached' ? route('billing.show') : null,
+            ]), $status);
         } catch (Throwable $e) {
             report($e);
 

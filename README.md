@@ -23,7 +23,7 @@ Portfolio + MVP foundation for a B2C wellness product:
 2. **Coach** — personalized AI wellness chat with safety framing  
 3. **Check in** — daily habit progress  
 4. **Plan** — AI weekly plan (strict JSON + safe fallback)  
-5. **Subscribe** — optional Pro checkout (Stripe test mode; features not gated yet)
+5. **Subscribe** — Pro checkout for unlimited coaching (Stripe test mode)
 
 ## Architecture
 
@@ -67,6 +67,7 @@ Requires PHP **8.2 or newer** (CI runs on 8.4) and Node.js for the Vite build.
 | `STRIPE_KEY` / `STRIPE_SECRET` | Stripe test keys |
 | `STRIPE_WEBHOOK_SECRET` | Webhook verification (required outside local/testing) |
 | `STRIPE_PRICE_ID` | Recurring Price id for Pro |
+| `FREE_COACH_MESSAGES_PER_DAY` | Free plan's daily AI coach messages (default 10) |
 
 ## Demo
 
@@ -85,10 +86,10 @@ Tests run against in-memory SQLite (configured in `phpunit.xml`), so no database
 
 | Tier | What you get |
 |------|----------------|
-| **Free** | Onboarding, AI coach, habit check-ins, weekly plans |
-| **Pro** | Same experience today + Stripe subscription concept for future entitlements |
+| **Free** | Onboarding, habit check-ins, weekly plans, and 10 AI coach messages a day |
+| **Pro** | Everything in Free, with unlimited AI coach messages |
 
-Features are **not** blocked behind Pro yet (soft CTA only).
+The daily allowance resets at midnight in the user's timezone and is set by `FREE_COACH_MESSAGES_PER_DAY`. Limits are decided in one place, `App\Domains\Billing\Services\Entitlements`, and are off while `FEATURE_SUBSCRIPTIONS=false`.
 
 ## Explicitly deferred / out of scope
 

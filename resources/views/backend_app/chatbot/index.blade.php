@@ -34,6 +34,13 @@
             {{ $disclaimer }}
         </div>
 
+        @if($dailyLimit !== null)
+            <p class="text-muted small mb-3" id="coach-usage">
+                <span id="coach-remaining">{{ $remainingToday }}</span> of {{ $dailyLimit }} free messages left today
+                · <a href="{{ route('billing.show') }}">Upgrade to Pro</a> for unlimited coaching
+            </p>
+        @endif
+
         <div class="chat-container px-5 border rounded-3 bg-white" style="overflow-y: scroll;height:500px;" id="chat-container">
             @forelse(($conversation?->messages ?? collect()) as $message)
                 @if($message->role->value === 'user')
@@ -179,6 +186,10 @@
 
                     if (response.conversation_id) {
                         $('#conversation_id').val(response.conversation_id);
+                    }
+
+                    if (typeof response.remaining_today === 'number') {
+                        $('#coach-remaining').text(response.remaining_today);
                     }
 
                     const coachMessage = response.message || 'No response received.';
