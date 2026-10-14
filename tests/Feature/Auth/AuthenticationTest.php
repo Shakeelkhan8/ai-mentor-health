@@ -52,4 +52,24 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
         $response->assertRedirect('/');
     }
+
+    public function test_logout_cannot_be_triggered_by_a_get_request(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->get('/logout')->assertMethodNotAllowed();
+
+        $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_app_navigation_logs_out_with_a_post_form(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get(route('onboarding.show'))
+            ->assertOk()
+            ->assertSee('<form method="POST" action="'.route('logout').'">', false)
+            ->assertDontSee('href="'.route('logout').'"', false);
+    }
 }
