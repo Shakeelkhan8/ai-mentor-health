@@ -194,6 +194,21 @@ class ProfileTest extends TestCase
         $this->assertSame([], Storage::disk('avatars')->allFiles());
     }
 
+    public function test_rejected_profile_image_error_is_shown_on_the_profile_form(): void
+    {
+        Storage::fake('avatars');
+        $user = $this->onboardedUser();
+
+        $svg = UploadedFile::fake()->createWithContent('avatar.svg', '<svg xmlns="http://www.w3.org/2000/svg"></svg>');
+
+        $this->actingAs($user)
+            ->from('/edit-profile')
+            ->followingRedirects()
+            ->post('/profile', $this->profileData($user, ['img' => $svg]))
+            ->assertOk()
+            ->assertSee('The img field must be a file of type: jpg, jpeg, png, gif, webp.');
+    }
+
     private function profileData(User $user, array $overrides = []): array
     {
         return array_merge(['name' => $user->name, 'email' => $user->email], $overrides);

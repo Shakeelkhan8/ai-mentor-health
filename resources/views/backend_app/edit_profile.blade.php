@@ -63,7 +63,7 @@
                         id="upload"
                         class="account-file-input"
                         hidden
-                        accept="image/png, image/jpeg"
+                        accept="image/png, image/jpeg, image/gif, image/webp"
                         name="img"
                         />
                     </label>
@@ -72,7 +72,10 @@
                       <span class="d-none d-sm-block">Reset</span>
                     </button>
 
-                    <div class="text-muted">Allowed JPG, GIF or PNG. Max size of 800K</div>
+                    <div class="text-muted">Allowed JPG, PNG, GIF or WebP. Max size of 2 MB</div>
+                    @error('img')
+                    <span class="text-danger">{{$message}}</span>
+                    @enderror
                   </div>
                 </div>
               </div>
