@@ -34,6 +34,13 @@
             {{ $disclaimer }}
         </div>
 
+        @if(config('mentor.demo.enabled'))
+            <div class="alert alert-info small mb-3">
+                <strong>Demo mode:</strong> the AI is switched off in this demo, so the coach answers with
+                pre-written tips on sleep, stress, nutrition and fitness.
+            </div>
+        @endif
+
         @if($dailyLimit !== null)
             <p class="text-muted small mb-3" id="coach-usage">
                 <span id="coach-remaining">{{ $remainingToday }}</span> of {{ $dailyLimit }} free messages left today

@@ -24,31 +24,29 @@
       <!-- Login -->
 
       <div class="d-flex col-12 col-lg-5 align-items-center p-sm-5 p-4">
-        <form method="POST" action="{{ route('login') }}">
-            @csrf
-
         <div class="w-px-400 mx-auto">
-          <!-- Logo -->
-          <div class="app-brand mb-4">
-            <a href="index.html" class="app-brand-link gap-2">
-              <span class="app-brand-logo demo">
+          <h3 class="mb-1">Welcome to {{ config('mentor.name') }}! 👋</h3>
+          <p class="mb-4">Please sign in to your account and start the adventure</p>
 
-              </span>
-            </a>
-          </div>
-          <!-- /Logo -->
-          <h3 class="mb-1">Welcome to Mind Mentor Health! 👋</h3>
-          <p class="mb-4">Please sign-in to your account and start the adventure</p>
+          @if (config('mentor.demo.enabled'))
+            <form method="POST" action="{{ route('demo.login') }}" class="mb-4">
+              @csrf
+              <button type="submit" class="btn btn-label-primary d-grid w-100">Try the demo (no signup)</button>
+              <small class="text-muted d-block mt-1">Opens a shared account with sample habits, plans and coach chat.</small>
+            </form>
+          @endif
 
-          <form id="formAuthentication" class="mb-3" action="index.html" method="POST">
+          <form method="POST" action="{{ route('login') }}" class="mb-3">
+            @csrf
             <div class="mb-3">
-              <label for="email" class="form-label">Email or Username</label>
+              <label for="email" class="form-label">Email</label>
               <input
-                type="text"
+                type="email"
                 class="form-control"
                 id="email"
                 name="email"
-                placeholder="Enter your email or username"
+                value="{{ old('email') }}"
+                placeholder="Enter your email"
                 autofocus />
                 @error('email')
                 <span class="text-danger">{{$message}}</span>
@@ -77,30 +75,19 @@
             </div>
             <div class="mb-3">
               <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="remember-me" />
+                <input class="form-check-input" type="checkbox" id="remember-me" name="remember" />
                 <label class="form-check-label" for="remember-me"> Remember Me </label>
               </div>
             </div>
             <div class="mb-3">
               <a href="{{ route('register') }}">
-                <small>Dont have account? Signup</small>
+                <small>Don't have an account? Sign up</small>
               </a>
             </div>
-            <button class="btn btn-primary d-grid w-100">Sign in</button>
+            <button type="submit" class="btn btn-primary d-grid w-100">Sign in</button>
           </form>
-
-          {{-- <p class="text-center">
-            <span>New on our platform?</span>
-            <a href="auth-register-cover.html">
-              <span>Create an account</span>
-            </a>
-          </p> --}}
-
-
-
         </div>
       </div>
-    </form>
       <!-- /Login -->
     </div>
   </div>

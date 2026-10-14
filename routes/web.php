@@ -48,10 +48,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('community-forms');
         Route::get('edit-profile', [ProfileController::class, 'edit_profile'])->name('edit_profile');
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
-        Route::patch('/profile', [ProfileController::class, 'update']);
-        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-        Route::post('update-password', [ProfileController::class, 'update_password'])->name('update-password');
+        // demo.protect: in demo mode the shared demo account's profile and credentials are read-only.
+        Route::middleware('demo.protect')->group(function () {
+            Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+            Route::patch('/profile', [ProfileController::class, 'update']);
+            Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+            Route::post('update-password', [ProfileController::class, 'update_password'])->name('update-password');
+        });
 
         Route::prefix('ai')->middleware(['feature:ai_coach', 'throttle:coach'])->group(function () {
             Route::get('coach', [CoachController::class, 'index'])->name('coach.index');
