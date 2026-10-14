@@ -101,4 +101,6 @@ Legacy marketplace code remains feature-flagged off (`FEATURE_CARE_MARKETPLACE=f
 
 ## License
 
-Application code in this repository follows the project’s existing license terms. Laravel framework components remain under the MIT license.
+The application code in this repository is released under the [MIT License](LICENSE).
+
+Third-party code keeps its own license and is not covered by this one. In particular, the admin UI under `public/assets/` is built on the Vuexy theme by Pixinvent and the front-end libraries bundled with it. Composer and npm dependencies (including the Laravel framework) are installed separately under their own licenses.
