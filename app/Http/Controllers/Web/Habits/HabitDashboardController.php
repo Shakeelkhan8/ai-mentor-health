@@ -9,11 +9,7 @@ use App\Domains\Shared\Exceptions\DomainException;
 use App\Http\Controllers\Web\WebController;
 use App\Http\Requests\Habits\RecordHabitCheckInRequest;
 use Carbon\Carbon;
-use App\Domains\Habits\Models\Habit;
 use App\Domains\Habits\Services\HabitDashboardService;
-use App\Domains\Shared\Exceptions\DomainException;
-use App\Http\Controllers\Web\WebController;
-use App\Http\Requests\Habits\RecordHabitCheckInRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
