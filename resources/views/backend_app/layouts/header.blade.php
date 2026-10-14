@@ -24,76 +24,6 @@
         </a>
       </li>
 
-      <!-- Layouts -->
-      {{-- <li class="menu-item {{ Request::is('add-files') || Request::is('all-files') ? 'active' : '' }}">
-
-      <li class="menu-item {{ Request::is('add-files') || Request::is('all-files') ? 'open' : '' }}  ">
-        <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons ti ti-chart-pie"></i>
-          <div >File Modules</div>
-        </a>
-
-        <ul class="menu-sub">
-          <li class="menu-item {{ Request::is('add-files') ? 'active' : '' }}">
-            <a href="{{route('add-files')}}" class="menu-link">
-              <div >Add New File</div>
-            </a>
-          </li>
-          <li class="menu-item {{ Request::is('all-files') ? 'active' : '' }}">
-            <a href="{{route('all-files')}}" class="menu-link">
-              <div >View All Files</div>
-            </a>
-          </li>
-
-        </ul>
-      </li>
-
-
-      <li class="menu-item {{ Request::is('discount/add-form') || Request::is('discount/all-forms') ? 'open' : '' }} ">
-        <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons ti ti-layout-sidebar"></i>
-          <div >Discount Forms</div>
-        </a>
-
-        <ul class="menu-sub">
-          <li class="menu-item {{ Request::is('discount/add-form')  ? 'active' : '' }}">
-            <a href="{{route('add-discount-form')}}" class="menu-link">
-              <div >Add Forms</div>
-            </a>
-          </li>
-          <li class="menu-item {{ Request::is('discount/all-forms') ? 'active' : '' }}">
-            <a href="{{route('all-discount-form')}}" class="menu-link">
-              <div >All Forms</div>
-            </a>
-          </li>
-
-        </ul>
-      </li>
-      <!-- Front Pages -->
-      <li class="menu-item {{ Request::is('all-dealers') || Request::is('add-dealer') ? 'open' : '' }}">
-        <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons ti ti-files"></i>
-          <div >Sales Partners</div>
-        </a>
-        <ul class="menu-sub">
-          <li class="menu-item {{ Request::is('all-dealers')  ? 'active' : '' }}">
-            <a href="{{route('all-dealer')}}" class="menu-link">
-              <div >All Dealers</div>
-            </a>
-          </li>
-          <li class="menu-item {{ Request::is('add-dealer')  ? 'active' : '' }}">
-            <a href="{{route('add-dealer')}}" class="menu-link" >
-              <div >Add Dealers</div>
-            </a>
-          </li>
-
-        </ul>
-      </li>
-
-
-
-      {{-- <!-- Apps & Pages --> --}}
-
       @if(config('mentor.features.care_marketplace') && $user->role === "admin")
       <li class="menu-item {{ Request::is('all-clients') || Request::is('add-client') ? 'open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -176,22 +106,6 @@
 
       <!-- Academy menu end -->
 
-
-{{--
-      <li class="menu-item {{ Request::is('all-forms')     ? 'active' : '' }}">
-        <a href="{{route('all-forms')}}" class="menu-link ">
-          <i class="menu-icon tf-icons ti ti-file-description"></i>
-          <div>Customer Query</div>
-        </a>
-
-      </li>
-      <li class="menu-item {{ Request::is('all-partners') ? 'active' : '' }}">
-        <a href="{{route('all-partners')}}" class="menu-link ">
-          <i class="menu-icon tf-icons ti ti-users"></i>
-          <div>Affiliated Sales Partners</div>
-        </a>
-
-      </li> --}}
       <li class="menu-header small text-uppercase">
         <span class="menu-header-text">Advance Options</span>
       </li>

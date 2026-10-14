@@ -18,7 +18,6 @@
         <!-- DataTable with Buttons -->
         <div class="card">
             <div class="table-responsive text-nowrap">
-                {{-- <a href="{{route('add-files')}}" class="btn btn-primary float-end mt-3 mx-3">Add New File</a> --}}
                 <table class="table">
                   <thead>
                     <tr class="text-nowrap">
