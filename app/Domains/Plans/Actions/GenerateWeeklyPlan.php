@@ -53,10 +53,13 @@ class GenerateWeeklyPlan extends Action
                 $plan = $existing->fresh();
             } else {
                 try {
-                    $plan = WeeklyPlan::query()->create([
+                    // Savepoint: if a concurrent request inserted this week's plan first, only the
+                    // savepoint rolls back. PostgreSQL would otherwise abort the whole transaction
+                    // and the fallback query below would fail.
+                    $plan = DB::transaction(fn () => WeeklyPlan::query()->create([
                         'user_id' => $user->id,
                         ...$attributes,
-                    ]);
+                    ]));
                 } catch (UniqueConstraintViolationException) {
                     $plan = WeeklyPlan::query()
                         ->where('user_id', $user->id)
