@@ -23,8 +23,10 @@ Route::view('faqs', 'front_app.faq')->name('faqs');
 Route::view('pricing', 'front_app.pricing')->name('pricing');
 Route::view('contact', 'front_app.contact')->name('contact');
 Route::view('services', 'front_app.services')->name('services');
-Route::post('send-mail', [MainController::class, 'send_Mail'])->name('sendmail');
-Route::post('form-submit', [MainController::class, 'formSubmit'])->name('contact.store');
+Route::middleware('throttle:public-forms')->group(function () {
+    Route::post('send-mail', [MainController::class, 'send_Mail'])->name('sendmail');
+    Route::post('form-submit', [MainController::class, 'formSubmit'])->name('contact.store');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -41,7 +43,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->middleware('feature:habit_tracking')
             ->name('habits.check-ins.store');
 
-        Route::get('community-form', [MainController::class, 'forms'])->name('community-forms');
+        Route::get('community-form', [MainController::class, 'forms'])
+            ->middleware('can:admin')
+            ->name('community-forms');
         Route::get('edit-profile', [ProfileController::class, 'edit_profile'])->name('edit_profile');
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
