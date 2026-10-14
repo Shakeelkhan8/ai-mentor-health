@@ -73,6 +73,8 @@ Requires PHP **8.2 or newer** (CI runs on 8.4) and Node.js for the Vite build.
 
 Follow the 5–10 minute walkthrough: **[docs/DEMO.md](docs/DEMO.md)**
 
+The hosted demo runs on Render's free plan in demo mode: pre-written coach replies (no AI costs) and a one-click **Try the demo** account. Setup and trade-offs: **[docs/DEPLOY.md](docs/DEPLOY.md)**.
+
 ## Tests and code quality
 
 ```bash
