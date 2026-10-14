@@ -31,14 +31,16 @@ class GenerateWeeklyPlan extends Action
         $timezone = $user->profile->timezone ?: config('app.timezone', 'UTC');
         $weekStart = Carbon::now($timezone)->startOfWeek(Carbon::MONDAY)->toDateString();
 
-        return DB::transaction(function () use ($user, $weekStart) {
-            $existing = WeeklyPlan::query()
-                ->where('user_id', $user->id)
-                ->whereDate('week_start', $weekStart)
-                ->first();
+        $existing = WeeklyPlan::query()
+            ->where('user_id', $user->id)
+            ->whereDate('week_start', $weekStart)
+            ->first();
 
-            $payload = $this->generator->generate($user, $weekStart, $existing);
+        // The generator calls the AI provider (up to ~36 s with retries), so it runs with
+        // no transaction open; only the write below is transactional.
+        $payload = $this->generator->generate($user, $weekStart, $existing);
 
+        return DB::transaction(function () use ($user, $weekStart, $existing, $payload) {
             $attributes = [
                 'status' => PlanStatus::Active,
                 'title' => $payload['title'],
