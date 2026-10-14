@@ -32,6 +32,11 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(20)->by($request->user()?->id ?: $request->ip());
         });
 
+        // Unauthenticated forms that send mail or store visitor data. Shared per-IP budget.
+        RateLimiter::for('public-forms', function (Request $request) {
+            return Limit::perMinute(5)->by($request->ip());
+        });
+
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')

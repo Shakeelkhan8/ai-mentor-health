@@ -18,6 +18,9 @@ class MainController extends Controller
 
     public function send_Mail(Request $request)
     {
+        $request->validate([
+            'email' => 'required|email|max:255',
+        ]);
 
         Mail::to($request->email)->send(new NewsLetterMail($request->email));
         return back()->with("success", "Mail Has been sent successfully");
