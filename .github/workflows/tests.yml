@@ -38,6 +38,15 @@ jobs:
 
       - run: composer analyse -- --no-progress
 
+  docker:
+    # Builds the demo image the way Render does, so a Dockerfile that points at a
+    # removed path fails here instead of on the next deploy.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: docker build --tag ai-mentor-health-demo .
+
   tests:
     runs-on: ubuntu-latest
     strategy:
