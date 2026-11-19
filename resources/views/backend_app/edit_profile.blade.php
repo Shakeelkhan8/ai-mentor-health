@@ -2,7 +2,7 @@
     $countries = ['Australia', 'Bangladesh', 'Belarus', 'Brazil', 'Canada', 'China', 'France', 'Germany', 'India',
         'Indonesia', 'Israel', 'Italy', 'Japan', 'Korea', 'Mexico', 'Pakistan', 'Philippines', 'Russia', 'Saudi Arabia',
         'South Africa', 'Thailand', 'Turkey', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States'];
-    $fieldClass = 'mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm';
+    $fieldClass = 'mt-1 block w-full border-gray-300 focus:border-brand-500 focus:ring-brand-500 rounded-md shadow-sm';
 @endphp
 
 <x-app-layout>
@@ -22,14 +22,14 @@
                         @if ($user->img)
                             <img src="{{ asset('assets/users/'.$user->img) }}" alt="Your profile photo" class="h-20 w-20 rounded-full object-cover">
                         @else
-                            <div class="flex h-20 w-20 items-center justify-center rounded-full bg-indigo-100 text-2xl font-semibold text-indigo-700" aria-hidden="true">
+                            <div class="flex h-20 w-20 items-center justify-center rounded-full bg-brand-100 text-2xl font-semibold text-brand-700" aria-hidden="true">
                                 {{ mb_strtoupper(mb_substr($user->name, 0, 1)) }}
                             </div>
                         @endif
                         <div>
                             <x-input-label for="img" value="Profile photo" />
                             <input id="img" name="img" type="file" accept="image/png, image/jpeg, image/gif, image/webp"
-                                class="mt-1 block text-sm text-gray-700 file:me-3 file:rounded-md file:border-0 file:bg-gray-800 file:px-3 file:py-1.5 file:text-white">
+                                class="mt-1 block text-sm text-gray-700 file:me-3 file:rounded-md file:border-0 file:bg-brand-600 file:px-3 file:py-1.5 file:text-white">
                             <p class="mt-1 text-sm text-gray-500">JPG, PNG, GIF or WebP, up to 2 MB.</p>
                             <x-input-error :messages="$errors->get('img')" class="mt-1" />
                         </div>

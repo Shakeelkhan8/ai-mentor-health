@@ -22,7 +22,7 @@
                 </p>
             </div>
             @if (config('mentor.features.ai_coach'))
-                <a href="{{ route('coach.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">
+                <a href="{{ route('coach.index') }}" class="btn-primary">
                     Talk to AI Coach
                 </a>
             @endif
@@ -71,7 +71,7 @@
                                     @elseif($todayStatus === CheckInStatus::Skipped)
                                         <span class="rounded-full bg-gray-200 px-2 py-0.5 text-xs font-medium text-gray-700">Skipped today</span>
                                     @else
-                                        <span class="rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">Not checked in</span>
+                                        <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">Not checked in</span>
                                     @endif
                                 </div>
                             </div>

@@ -1,1 +1,2 @@
-<img src="https://images.squarespace-cdn.com/content/v1/587a592b3a0411c502816bd8/1484477606857-VZ7SRNMLU8ERLGGL5WSA/MindMentor_Logo_Black_02.png" class="w-100" alt="">
+{{-- The brand mark on its own. Decorative by default: pair it with the product name, or pass an alt. --}}
+<img src="{{ asset('images/brand/logo-mark.svg') }}" alt="" width="36" height="36" {{ $attributes->merge(['class' => 'h-9 w-9 shrink-0']) }}>

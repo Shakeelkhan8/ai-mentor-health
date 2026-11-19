@@ -31,7 +31,7 @@
                                 <label for="focus_{{ $area->value }}" class="flex items-center gap-3 rounded-md border border-gray-200 p-3 hover:bg-gray-50">
                                     <input
                                         type="checkbox"
-                                        class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                        class="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
                                         name="focus_areas[]"
                                         id="focus_{{ $area->value }}"
                                         value="{{ $area->value }}"
@@ -50,7 +50,7 @@
                             name="primary_goal"
                             rows="3"
                             maxlength="500"
-                            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                            class="mt-1 block w-full border-gray-300 focus:border-brand-500 focus:ring-brand-500 rounded-md shadow-sm"
                             placeholder="Example: Build a consistent sleep routine and reduce late-night scrolling."
                             required
                         >{{ old('primary_goal', $profile?->primary_goal) }}</textarea>
@@ -58,7 +58,7 @@
 
                     <div>
                         <x-input-label for="timezone" value="Timezone" />
-                        <select id="timezone" name="timezone" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                        <select id="timezone" name="timezone" class="mt-1 block w-full border-gray-300 focus:border-brand-500 focus:ring-brand-500 rounded-md shadow-sm">
                             @foreach ($timezones as $timezone)
                                 <option value="{{ $timezone }}" @selected($timezone === old('timezone', $selectedTimezone))>
                                     {{ $timezone }}

@@ -50,7 +50,7 @@
                                     <div class="font-medium text-gray-900">{{ $item['action'] ?? '' }}</div>
                                     <div class="text-sm text-gray-500">{{ $item['target'] ?? '' }}</div>
                                 </div>
-                                <span class="self-start rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium uppercase text-indigo-700">
+                                <span class="self-start rounded-full bg-brand-50 px-2 py-0.5 text-xs font-medium uppercase text-brand-700">
                                     {{ $item['category'] ?? 'habit' }}
                                 </span>
                             </li>

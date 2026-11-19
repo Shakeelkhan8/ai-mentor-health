@@ -28,7 +28,7 @@ class NewsLetterMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Mind Mentor Mail',
+            subject: 'Welcome to '.config('mentor.name').' wellness tips',
         );
     }
 
