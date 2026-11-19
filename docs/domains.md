@@ -13,7 +13,7 @@
 
 ## Models
 New Eloquent models live under `app/Domains/{Domain}/Models`.
-Legacy marketplace models remain in `app/Models` until migrated or removed.
+Shared, non-domain models (`User`, `ContactForm`, `Notification`) live in `app/Models`.
 
 ### Current domain tables
 | Table | Domain | Notes |
@@ -31,6 +31,7 @@ Legacy marketplace models remain in `app/Models` until migrated or removed.
 
 | Area | Routes | Notes |
 |------|--------|--------|
+| Marketing | `GET /`, `GET /contact`, `POST /form-submit`, `POST /send-mail` | Public; forms are rate limited. `/about`, `/services`, `/pricing` and `/faqs` redirect to sections of `/` |
 | Onboarding | `GET/POST /onboarding` | Required before app |
 | Dashboard | `GET /dashboard` | Habits check-in + soft Pro CTA |
 | Coach | `GET/POST /ai/coach*` | `feature:ai_coach` |

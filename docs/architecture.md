@@ -32,7 +32,6 @@ Infrastructure (AI clients, Stripe, mail, storage)
 | `Plans` | Weekly personalized plans |
 | `Billing` | Subscriptions, Stripe webhooks, entitlements |
 | `Shared` | Actions base, domain exceptions, shared contracts |
-| `Legacy Care` | Doctors/appointments/hospitals — feature-flagged off |
 
 ## Key paths
 
