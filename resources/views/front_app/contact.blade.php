@@ -1,83 +1,45 @@
-@extends('front_app.layouts.template')
-@section('content')
-<section class="contact-banner banner-sec about-banner w-100 float-left bg-light-black">
-    <!-- ... existing banner content ... -->
-</section>
-<!-- banner section -->
-<!-- contact section-->
-<section class="contact-section w-100 float-left padding-top padding-bottom bg-light-black" id="form-contact">
-    <div class="wrapper2">
-        <div class="generic-title text-center">
-            <span data-aos="fade-up" data-aos-duration="600">CONTACT US</span>
-            <h2 data-aos="fade-up" data-aos-duration="600">
-                Feel free to use the contact form <br>
-                to the right to reach out to us, or write us <br>
-                the old fashion way.
-            </h2>
+<x-marketing-layout title="Contact">
+    <section class="relative overflow-hidden bg-ink">
+        <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(50rem_30rem_at_20%_-20%,rgba(16,185,133,0.22),transparent_65%)]"></div>
+        <div class="relative mx-auto max-w-6xl px-6 py-20">
+            <p class="text-sm font-semibold text-brand-300">Contact</p>
+            <h1 class="mt-2 max-w-2xl text-4xl font-semibold tracking-tight text-white">Questions about AI Mentor Health? We'd like to hear them.</h1>
+            <p class="mt-4 max-w-xl text-gray-300">Send a message and we'll reply by email.</p>
         </div>
-        <div class="contct-form-section">
-            <div class="row align-items-center">
-                <div class="col-lg-6 col-md-5 order-md-0 order-2 ">
-                    <div class="contact-details">
-                        <ul class="mb-0 list-unstyled">
-                            <li class="position-relative" data-aos="fade-up" data-aos-duration="600">
-                                <i class="fas fa-map-marker-alt"></i> 551 Swanston Street, Melbourne <br>
-                                Victoria 3053 Australia
-                            </li>
-                            <li class="position-relative" data-aos="fade-up" data-aos-duration="600">
-                                <i class="fas fa-phone-volume"></i>
-                                <a href="tel:+61383766284">+61 3 8376 6284</a>
-                            </li>
-                            <li class="position-relative mb-0" data-aos="fade-up" data-aos-duration="600">
-                                <i class="fas fa-envelope"></i>
-                                <a href="mailto:info@designingmedia.com">info@designingmedia.com</a>
-                            </li>
-                        </ul>
+    </section>
+
+    <section class="py-16">
+        <div class="mx-auto max-w-2xl px-6">
+            <form action="{{ route('contact.store') }}" method="POST" class="space-y-6 rounded-2xl border border-gray-200 p-8 shadow-sm">
+                <div class="grid gap-6 sm:grid-cols-2">
+                    @csrf
+                    <div>
+                        <x-input-label for="name" value="Name" />
+                        <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name')" required autocomplete="name" />
+                        <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                    </div>
+                    <div>
+                        <x-input-label for="phone" value="Phone" />
+                        <x-text-input id="phone" name="phone" type="tel" class="mt-1 block w-full" :value="old('phone')" required autocomplete="tel" />
+                        <x-input-error :messages="$errors->get('phone')" class="mt-2" />
                     </div>
                 </div>
-                <div class="col-lg-6 col-md-7">
-                    <div class="contact-form-box">
-                        <form class="bg-dark-black" action="{{ route('contact.store') }}" method="post">
-                            @csrf
-                            <h3>How Can We Help?</h3>
-                            <ul class="list-unstyled mb-0">
-                               <li class="position-relative">
-                                   <i class="fas fa-user-alt"></i>
-                                   <input class="w-100" placeholder="Name" type="text" name="name" id="name" value="{{ old('name') }}">
-                                   @error('name')
-                                       <small class="text-danger">{{ $message }}</small>
-                                   @enderror
-                               </li>
-                               <li class="position-relative">
-                                   <i class="fas fa-phone-volume"></i>
-                                   <input class="w-100" type="text" placeholder="Phone Number" name="phone" id="phone" value="{{ old('phone') }}">
-                                   @error('phone')
-                                       <small class="text-danger">{{ $message }}</small>
-                                   @enderror
-                               </li>
-                               <li class="position-relative">
-                                   <i class="fas fa-envelope"></i>
-                                   <input class="w-100" type="email" placeholder="Email Address" name="email" id="email" value="{{ old('email') }}">
-                                   @error('email')
-                                       <small class="text-danger">{{ $message }}</small>
-                                   @enderror
-                               </li>
-                               <li class="w-100 position-relative">
-                                   <i class="fas fa-pencil-alt"></i>
-                                   <textarea class="w-100" placeholder="Message" name="message" id="subject">{{ old('subject') }}</textarea>
-                                   @error('message')
-                                       <small class="text-danger">{{ $message }}</small>
-                                   @enderror
-                               </li>
-                               <li class="mb-0 w-100 d-inline-block generic-btn">
-                                   <button type="submit" id="submit">Get Started</button>
-                               </li>
-                            </ul>
-                         </form>
-                    </div>
+
+                <div>
+                    <x-input-label for="email" value="Email" />
+                    <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email')" required autocomplete="email" />
+                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
                 </div>
-            </div>
+
+                <div>
+                    <x-input-label for="message" value="Message" />
+                    <textarea id="message" name="message" rows="6" required
+                              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500">{{ old('message') }}</textarea>
+                    <x-input-error :messages="$errors->get('message')" class="mt-2" />
+                </div>
+
+                <button type="submit" class="btn-primary w-full py-3">Send message</button>
+            </form>
         </div>
-    </div>
-</section>
-@endsection
+    </section>
+</x-marketing-layout>

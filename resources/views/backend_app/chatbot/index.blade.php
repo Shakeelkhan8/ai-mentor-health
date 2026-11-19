@@ -18,14 +18,14 @@
             @if($dailyLimit !== null)
                 <p class="text-sm text-gray-600" id="coach-usage">
                     <span id="coach-remaining">{{ $remainingToday }}</span> of {{ $dailyLimit }} free messages left today
-                    · <a href="{{ route('billing.show') }}" class="font-medium text-indigo-600 hover:underline">Upgrade to Pro</a> for unlimited coaching
+                    · <a href="{{ route('billing.show') }}" class="font-medium text-brand-600 hover:underline">Upgrade to Pro</a> for unlimited coaching
                 </p>
             @endif
 
             <div id="chat-container" class="h-[28rem] overflow-y-auto rounded-lg border border-gray-200 bg-white p-4 space-y-3" aria-live="polite">
                 @forelse(($conversation?->messages ?? collect()) as $message)
                     @if($message->role->value === 'user')
-                        <div class="flex justify-end"><p class="max-w-[75%] whitespace-pre-line rounded-lg bg-indigo-600 px-3 py-2 text-sm text-white">{{ $message->content }}</p></div>
+                        <div class="flex justify-end"><p class="max-w-[75%] whitespace-pre-line rounded-lg bg-brand-600 px-3 py-2 text-sm text-white">{{ $message->content }}</p></div>
                     @else
                         <div class="flex justify-start"><p class="max-w-[75%] whitespace-pre-line rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-900">{{ $message->content }}</p></div>
                     @endif
@@ -68,7 +68,7 @@
                 row.className = 'flex ' + (fromUser ? 'justify-end' : 'justify-start');
                 const p = document.createElement('p');
                 p.className = 'max-w-[75%] whitespace-pre-line rounded-lg px-3 py-2 text-sm '
-                    + (fromUser ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-900');
+                    + (fromUser ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-900');
                 p.textContent = text;
                 row.appendChild(p);
                 chat.appendChild(row);

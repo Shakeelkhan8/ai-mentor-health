@@ -45,7 +45,7 @@ RUN composer dump-autoload --no-dev --optimize \
 
 # Run as an unprivileged user. Only the paths the app writes to are owned by it.
 RUN useradd --create-home --uid 1000 app \
-    && chown -R app:app storage bootstrap/cache database public/assets/users public/assets/doctors /config/caddy /data/caddy
+    && chown -R app:app storage bootstrap/cache database public/assets/users /config/caddy /data/caddy
 USER app
 
 EXPOSE 8080

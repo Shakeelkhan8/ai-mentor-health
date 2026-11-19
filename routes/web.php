@@ -16,11 +16,13 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 Route::view('/', 'front_app.index')->name('home');
-Route::view('about', 'front_app.about')->name('about');
-Route::view('faqs', 'front_app.faq')->name('faqs');
-Route::view('pricing', 'front_app.pricing')->name('pricing');
 Route::view('contact', 'front_app.contact')->name('contact');
-Route::view('services', 'front_app.services')->name('services');
+
+// The old one-page-per-section URLs now point at sections of the landing page.
+Route::redirect('about', '/#how-it-works')->name('about');
+Route::redirect('services', '/#features')->name('services');
+Route::redirect('pricing', '/#pricing')->name('pricing');
+Route::redirect('faqs', '/#faq')->name('faqs');
 Route::middleware('throttle:public-forms')->group(function () {
     Route::post('send-mail', [MainController::class, 'send_Mail'])->name('sendmail');
     Route::post('form-submit', [MainController::class, 'formSubmit'])->name('contact.store');

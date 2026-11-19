@@ -5,7 +5,7 @@
     @if (config('mentor.demo.enabled'))
         <form method="POST" action="{{ route('demo.login') }}" class="mb-6">
             @csrf
-            <button type="submit" class="w-full rounded-md border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100">
+            <button type="submit" class="btn w-full border border-brand-200 bg-brand-50 text-brand-700 hover:bg-brand-100 focus-visible:ring-brand-500">
                 Try the demo (no signup)
             </button>
             <p class="mt-1 text-xs text-gray-500">Opens a shared account with sample habits, plans and coach chat.</p>
@@ -35,7 +35,7 @@
         <!-- Remember Me -->
         <div class="block mt-4">
             <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
+                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-brand-600 shadow-sm focus:ring-brand-500" name="remember">
                 <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
             </label>
         </div>

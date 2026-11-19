@@ -11,7 +11,7 @@
                         If checkout just finished, webhook sync may take a moment — refresh Billing shortly.
                     @endif
                 </p>
-                <a href="{{ route('billing.show') }}" class="mt-4 inline-flex items-center px-4 py-2 bg-gray-800 rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">Back to Billing</a>
+                <a href="{{ route('billing.show') }}" class="mt-4 btn-primary">Back to Billing</a>
             </x-card>
         </div>
     </div>

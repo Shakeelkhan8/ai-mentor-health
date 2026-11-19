@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" role="img" aria-label="AI Mentor Health">
+  <defs>
+    <linearGradient id="amh-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#10b985"/>
+      <stop offset="1" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="amh-shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.22"/>
+      <stop offset="0.55" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="48" height="48" rx="13" fill="url(#amh-bg)"/>
+  <rect width="48" height="48" rx="13" fill="url(#amh-shine)"/>
+  <path d="M9 29h6.5l4-12.5 5 19 4.5-14 2.5 7.5H39" fill="none" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M36.5 9.5l1.1 2.9 2.9 1.1-2.9 1.1-1.1 2.9-1.1-2.9-2.9-1.1 2.9-1.1z" fill="#d1fae9"/>
+</svg>
